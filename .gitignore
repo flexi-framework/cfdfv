@@ -1,0 +1,5 @@
+*.o
+*.mod
+share/*
+!share/cgnslib_3.1.4-2.tar.gz
+!share/Makefile
