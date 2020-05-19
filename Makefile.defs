@@ -1,0 +1,74 @@
+#*****************************************************************************!
+#
+# C F D F V   M A K E F I L E
+#
+#*****************************************************************************!
+
+#Set the Compiler for the program
+COMPILER=GNU
+
+#Set equation system
+EQNSYS=euler
+#EQNSYS=navierstokes
+
+# Compiler Flags
+AR =ar
+AR_FLAGS=clr
+
+#---------------------------------------------------------------------------------------------------------------------------------#
+# CGNS 
+# #---------------------------------------------------------------------------------------------------------------------------------#
+# # Directly added in src/Makefile_PostProc
+CGNS_VERSION = 3.1.4
+CGNS_SUBVERSION = 2
+
+
+#Set Compiler strings
+ENVIRONMENT=$(COMPILER)
+#---------------------------------------------------------------------------------------------------------------------------------#
+# INTEL
+#---------------------------------------------------------------------------------------------------------------------------------#
+ifeq ($(findstring INTEL,$(ENVIRONMENT)),INTEL)
+  FC=ifort
+  FCFLAGS  =-fpp -assume bscc -r8 -i4 -traceback -warn all
+  FLFLAGS  =-r8 -i4 -traceback -assume bscc
+  ifeq ($(findstring DEBUG,$(ENVIRONMENT)),DEBUG)
+    FCFLAGS  +=-g -O0 -fpe0 -traceback \
+                 -check all,noarg_temp_created,noformat,nooutput_conversion,pointer,bounds,uninit
+    FLFLAGS  +=-g -O0
+  else
+    FCFLAGS  +=-O3 -xhost -vec-report0 -no-prec-div
+    FLFLAGS  +=-O3 -xhost -vec-report0 -no-prec-div
+  endif
+  # enable for openmp parallel execution
+  #FCFLAGS  += -openmp
+  #FLFLAGS  += -openmp
+endif
+
+#---------------------------------------------------------------------------------------------------------------------------------#
+# GNU
+#---------------------------------------------------------------------------------------------------------------------------------#
+ifeq ($(findstring GNU,$(ENVIRONMENT)),GNU)
+  FC=gfortran
+  FCFLAGS=-fdefault-real-8 -fdefault-double-8 -fbackslash
+  FLFLAGS=-fdefault-real-8 -fdefault-double-8 -fbackslash
+  ifeq ($(findstring DEBUG,$(ENVIRONMENT)),DEBUG)
+    FCFLAGS  += -g -O0 -ggdb3 -fbounds-check -finit-real=nan -fbacktrace -Wunused #-ffpe-trap=invalid,zero,overflow,underflow,denormal
+    FLFLAGS  += -g -O0 -ggdb3 -fbounds-check -finit-real=nan -fbacktrace -Wunused #-ffpe-trap=invalid,zero,overflow,underflow,denormal
+  else
+    FCFLAGS  += -O3 -march=native
+    FLFLAGS  += -O3 -march=native
+  endif
+  # enable for openmp parallel execution
+  #FCFLAGS  += -fopenmp
+  #FLFLAGS  += -fopenmp
+  # enable for gprof profiling
+  #FCFLAGS  += -pg
+  #FLFLAGS  += -pg
+endif
+
+
+CFDFV_LIB = libcfdfv.a
+#Includes
+INCDIRS = -I../share/cgnslib_$(CGNS_VERSION)/LINUX64/include
+

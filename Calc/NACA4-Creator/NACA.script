@@ -1,0 +1,198 @@
+//Eingeben der NACA4-Nr. und Anzhal der Stuetzstellen zum erzeugen der Spline
+//Format bsp. NACA- 0  0  1  2
+//Speichern in     [1][2][3][4]
+NACA4[1]=GetValue("1. Nummer des 4-stelligen NACA-Profils",0);
+NACA4[2]=GetValue("2. Nummer des 4-stelligen NACA-Profils",0);
+NACA4[3]=GetValue("3. Nummer des 4-stelligen NACA-Profils",0);
+NACA4[4]=GetValue("4. Nummer des 4-stelligen NACA-Profils",0);
+//Eingebe der Stuetzstellenanzahl
+Stuetzstellen=10000;
+//Eingabe des Fernfeld Radius
+RadiusFernfeldrand=20.0;
+//Eingabe der Länge des zu verfeinernen Bereiches an der Spitze in Prozent
+//spitzenLaenge=GetValue("Verfeinerung des Netzes ab der Spitze bis zur Eingabe in Prozent. (100=Kompletes Profil,0=keine Verfeinerung)",30);
+spitzenLaenge=30;
+//Faktor für die Characteristischen Längen
+faktor=GetValue("Faktor zur verfeinerung des Netzes. (1.5=Grob,0.7=Mittel,0.28=Fine,0.15=Super Fine)",0.7);
+//Eingabe Ende
+
+//Initalisieren der Geometrie-Daten
+CharacteristischeLaengeOberseite=0.025*faktor;
+CharacteristischeLaengeUnterseite=0.025*faktor;
+CharacteristischeLaengeSpitze=0.005*faktor;
+CharacteristischeLaengeAussen=2.0;
+SehnenLaenge=1.0;
+
+z=0;
+theta=0.0;
+yc=0.0;
+Profilwoelbung=NACA4[1];
+Woelbungsruecklage=NACA4[2];
+Profildicke=NACA4[3]*10+NACA4[4];
+Printf("NACA-%g%g%g%g",NACA4[1],NACA4[2],NACA4[3],NACA4[4]);
+Printf("Profilwoelbung=%g Prozent",Profilwoelbung);
+Printf("Woelbungsruecklage=%g Prozent",Woelbungsruecklage*10);
+Printf("Profildicke=%g Prozent",Profildicke);
+
+
+t=Profildicke/100.0;
+c=SehnenLaenge;
+p=Woelbungsruecklage/10.0;
+m=Profilwoelbung/100.0;
+r=1.1019*c*t*t;
+
+
+deltaX=0.0;
+deltaY=0.0;
+yOberseiteEnde=0.0;
+xOberseite=0.0;
+yOberseite=0.0;
+For i In {0:Stuetzstellen-1}
+	x=c/(Stuetzstellen-1)*i;
+	temp=(x/c);
+	ys=t/(0.2)*c*(0.2969*Sqrt(temp)-0.1260*(temp)-0.3516*(temp)*(temp)+0.2843*temp*temp*temp-0.1015*temp*temp*temp*temp);
+	If (p>0.0)
+		If (x<c*p)
+			yc=m*x/(p*p)*(2*p-temp);
+			theta=Atan(-2.0*m*(x-c*p)/(c*p*p));
+		EndIf
+		If (x>c*p)
+			yc=m*(c-x)/((1-p)*(1-p))*(1+temp-2*p);
+			theta=Atan(-2.0*m*(x-c*p)/(c*(p-1)*(p-1)));
+		EndIf
+	EndIf
+	
+	xOberseiteAlt=xOberseite;
+	yOberseiteAlt=yOberseite;
+	xOberseite=x-ys*Sin(theta);
+	yOberseite=yc+ys*Cos(theta);
+	deltaXOberseite=xOberseite-xOberseiteAlt;
+	deltaYOberseite=yOberseite-yOberseiteAlt;
+	yOberseiteEnde=yOberseite;
+	punkt=newp;
+	If (xOberseite <= (spitzenLaenge/100*c))
+		Point(punkt)={xOberseite,yOberseite,z,CharacteristischeLaengeSpitze};
+	EndIf
+
+	If ((xOberseite > (spitzenLaenge/100*c))&& (xOberseite< 0.9*c))
+		Point(punkt)={xOberseite,yOberseite,z,CharacteristischeLaengeOberseite};
+	EndIf
+
+	If ((xOberseite >= 0.9*c))
+		Point(punkt)={xOberseite,yOberseite,z,CharacteristischeLaengeOberseite};
+	EndIf
+	PunkteOberseite[i+1]=punkt;
+EndFor
+steigungOberseite=deltaYOberseite/deltaXOberseite;
+
+xUnterseite=0.0;
+yUnterseite=0.0;
+For i In {1:Stuetzstellen-1}
+	x=c/(Stuetzstellen-1)*i;
+	temp=(x/c);
+	ys=t/(0.2)*c*(0.2969*Sqrt(temp)-0.1260*(temp)-0.3516*(temp)*(temp)+0.2843*temp*temp*temp-0.1015*temp*temp*temp);
+	If (p>0.0)
+                If (x<=c*p)
+                        yc=m*x/(p*p)*(2*p-temp);
+                        theta=Atan(-2.0*m*(x-c*p)/(c*p*p));
+                EndIf
+                If (x>c*p)
+                        yc=m*(c-x)/((1-p)*(1-p))*(1+temp-2*p);
+                        theta=Atan(-2.0*m*(x-c*p)/(c*(p-1)*(p-1)));
+                EndIf
+        EndIf
+	xUnterseiteAlt=xUnterseite;
+	yUnterseiteAlt=yUnterseite;
+        xUnterseite=x+ys*Sin(theta);
+        yUnterseite=yc-ys*Cos(theta);
+	deltaXUnterseite=xUnterseite-xUnterseiteAlt;
+	deltaYUnterseite=yUnterseite-yUnterseiteAlt;
+	punkt=newp;
+	If (xUnterseite <= (spitzenLaenge/100*c))
+		Point(punkt)={xUnterseite,yUnterseite,z,CharacteristischeLaengeSpitze};
+	EndIf
+
+	If ((xUnterseite > (spitzenLaenge/100*c))&&(xUnterseite<0.9*c))
+		Point(punkt)={xUnterseite,yUnterseite,z,CharacteristischeLaengeUnterseite};
+	EndIf	
+
+	If (xUnterseite >=0.9*c)
+		Point(punkt)={xUnterseite,yUnterseite,z,CharacteristischeLaengeUnterseite};
+	EndIf
+	PunkteUnterseite[i+1]=punkt;
+EndFor
+steigungUnterseite=deltaYUnterseite/deltaXUnterseite;
+yWertEnde=0.0;
+xWertEnde=0.0;
+For i In {1:1000}
+	deltaXAbstand=i/1000;
+	epsilon=0.001;
+	yWertUnterseite=yUnterseite+deltaXAbstand*steigungUnterseite;
+	yWertOberseite=yOberseite+deltaXAbstand*steigungOberseite;
+	If (yWertOberseite-epsilon<yWertUnterseite && yWertUnterseite<yWertOberseite+epsilon)
+		yWertEnde=(yWertUnterseite+yWertOberseite)/2;
+		xWertEnde=(xUnterseite+xOberseite)/2+deltaXAbstand;				
+	EndIf
+EndFor
+
+punkt=newp;
+Point(punkt)={xWertEnde,yWertEnde,0,CharacteristischeLaengeOberseite};
+PunkteOberseite[Stuetzstellen+1]=punkt;
+PunkteUnterseite[1]=PunkteOberseite[1];
+PunkteUnterseite[Stuetzstellen+1]=punkt;
+
+For i In {1:Stuetzstellen+1}
+	PunkteUnterseiteRueckwerts[Stuetzstellen+2-i]=PunkteUnterseite[i];
+EndFor
+
+
+
+SplineOberseite=newl;
+BSpline(SplineOberseite)={PunkteOberseite[{1:Stuetzstellen+1}]};
+SplineUnterseite=newl;
+BSpline(SplineUnterseite)={PunkteUnterseiteRueckwerts[{1:Stuetzstellen+1}]};
+
+
+//Erzeugen des Fernfeldrandes
+
+PunktVorne=newp;
+Point(PunktVorne)={-RadiusFernfeldrand+(c/2.0),0,0,CharacteristischeLaengeAussen};
+PunktOben=newp;
+Point(PunktOben)={(c/2.0),RadiusFernfeldrand,0,CharacteristischeLaengeAussen};
+PunktHinten=newp;
+Point(PunktHinten)={RadiusFernfeldrand+(c/2.0),0,0,CharacteristischeLaengeAussen};
+PunktUnten=newp;
+Point(PunktUnten)={(c/2.0),-RadiusFernfeldrand,0,CharacteristischeLaengeAussen};
+MittelPunkt=newp;
+Point(MittelPunkt)={c/2.0,0,0,0};
+KreisNO=newl;
+Circle(KreisNO)={PunktHinten,MittelPunkt,PunktOben};
+KreisNW=newl;
+Circle(KreisNW)={PunktOben,MittelPunkt,PunktVorne};
+KreisSW=newl;
+Circle(KreisSW)={PunktVorne,MittelPunkt,PunktUnten};
+KreisSO=newl;
+Circle(KreisSO)={PunktUnten,MittelPunkt,PunktHinten};
+
+//Erstellen des Rechengebietes mit den bregrenzenden Flaechen Innen und Außen (negatives Vorzeichen bedeutet "Loch")
+
+Profil=newl;
+Line Loop(Profil)={SplineOberseite,SplineUnterseite};
+
+
+Fernfeldrand=newl;
+Line Loop(Fernfeldrand)={KreisNO,KreisNW,KreisSW,KreisSO};
+
+Rechengebiet=newl;
+Plane Surface(Rechengebiet)={Fernfeldrand,Profil};
+
+//Erstellen der Boundery Conditions
+SlipWall=101;
+Inflow=301;
+
+Physical Line(SlipWall)={SplineOberseite,SplineUnterseite};
+Physical Line(Inflow)={KreisNO,KreisNW,KreisSW,KreisSO};
+Physical Surface(99)={Rechengebiet};
+
+//Mathematischerhintergrund:
+//http://en.wikipedia.org/wiki/NACA_airfoil#Equation_for_a_symmetrical_4-digit_NACA_airfoil
