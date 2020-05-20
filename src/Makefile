@@ -37,6 +37,7 @@ $(OBJ): %.o: %.f90
 clean:
 	-@rm -f $(OBJ) *.mod cfdfv.o *.i
 	-@rm -f cfdfv.o
+	-@rm -f ../bin/cfdfv
 
 veryclean: clean
 	-@rm -f *~
