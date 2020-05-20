@@ -24,7 +24,7 @@ INCDIRS         = -I../share/CGNS-$(CGNS_VERSION)/BUILD/include
 
 # gnu
 ifeq ($(COMPILER), gnu)
-  FC      = gfortran-8
+  FC      = gfortran
   FCFLAGS = -fdefault-real-8 -fdefault-double-8 -fbackslash
   FLFLAGS = -fdefault-real-8 -fdefault-double-8 -fbackslash
   ifeq ($(DEBUG), on)
