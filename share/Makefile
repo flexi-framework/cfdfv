@@ -45,4 +45,4 @@ $(CGNS_LIB): $(CGNS_DIR)
 
 
 clean:
-	-rm -rf $(CGNS_DIR)
+	-@rm -rf $(CGNS_DIR)

@@ -2,7 +2,7 @@
 
 include config.mk
 
-.PHONY: all cfdfv shared clean veryclean cleanshare release
+.PHONY: all cfdfv shared clean veryclean cleanshare allclean release
 
 all: shared cfdfv
 	@echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
@@ -23,6 +23,8 @@ veryclean:
 
 cleanshare:
 	cd share/ && $(MAKE) clean
+
+allclean: clean veryclean cleanshare
 
 release:
 	mkdir CFDFV
