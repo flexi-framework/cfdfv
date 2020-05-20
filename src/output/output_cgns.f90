@@ -4,15 +4,15 @@ MODULE MOD_Output_cgns
 !===================================================================================================================================
 ! MODULES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE
-PRIVATE
-!-----------------------------------------------------------------------------------------------------------------------------------
 ! Include CGNS Library:
 ! (Please note that the CGNS library has to be installed in the computer's
 ! library and include path (see CGNS documentation for more information:
 ! www.cgns.org)
-INCLUDE 'cgnslib_f.h'
+USE CGNS
+!-----------------------------------------------------------------------------------------------------------------------------------
+! IMPLICIT VARIABLE HANDLING
+IMPLICIT NONE
+PRIVATE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! GLOBAL VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ INTERFACE CGNS_WriteMesh
    MODULE PROCEDURE CGNS_WriteMesh
 END INTERFACE
 !-----------------------------------------------------------------------------------------------------------------------------------
-PUBLIC  :: CGNS_WriteMesh,CGNSOutput,FinalizeCGNSOutput 
+PUBLIC  :: CGNS_WriteMesh,CGNSOutput,FinalizeCGNSOutput
 !===================================================================================================================================
 
 CONTAINS
@@ -55,7 +55,7 @@ LOGICAL,INTENT(IN)                :: ExactSolution
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER                 :: ierr, isize(1,3)
 INTEGER                 :: CGNSUnit
 INTEGER                 :: BaseIndex
@@ -244,7 +244,7 @@ IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 TYPE(tOutputTime), POINTER :: OutputTime
 INTEGER :: nOutput = 0
 INTEGER :: i
@@ -337,7 +337,7 @@ DO i = 1, nOutput
      CALL cg_link_write_f(solutionNames(i), &
                         TRIM(FileName) // '.cgns', &
                         '/Base/Zone/FlowSolution', ierr)
-   END IF 
+   END IF
 END DO
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! Create BaseIter Node
@@ -408,20 +408,20 @@ USE MOD_Mesh_Vars,      ONLY:tNode,tElem,tPureSidePtr
 USE MOD_Mesh_Vars,      ONLY:nBCSides,firstNode,firstElem,GridFile
 USE MOD_Mesh_Vars,      ONLY:FirstBCSide,nNodes,nElems,nTrias,nQuads
 !-----------------------------------------------------------------------------------------------------------------------------------
-! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE
-!-----------------------------------------------------------------------------------------------------------------------------------
 ! Include CGNS Library:
 ! (Please note that the CGNS library has to be installed in the computer's
 ! library and include path (see CGNS documentation for more information:
 ! www.cgns.org)
-INCLUDE 'cgnslib_f.h'
+USE CGNS
+!-----------------------------------------------------------------------------------------------------------------------------------
+! IMPLICIT VARIABLE HANDLING
+IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER                     :: ierr, nCount, iNode
 INTEGER                     :: isize(1,3)
 INTEGER                     :: CGNSUnit
@@ -640,7 +640,7 @@ CHARACTER(LEN=*),INTENT(IN)    :: Filename  ! (file)name
 ! OUTPUT VARIABLES
 CHARACTER(LEN=255)             :: TimeStamp ! the complete timestamp
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER                        :: i         ! loop variable
 REAL                           :: Time      ! time
 !===================================================================================================================================

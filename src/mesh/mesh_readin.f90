@@ -52,7 +52,7 @@ REAL, POINTER    :: Vertex(:,:)
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER          :: i, MeshUnit, stat
 INTEGER          :: nEdges, localEdge(3)
 CHARACTER(256)   :: actLine
@@ -130,7 +130,7 @@ DO WHILE((TRIM(actLine).ne.'Triangles').and.(TRIM(actLine).ne.'End'))
 END DO
 IF (TRIM(actLine).eq.'End') THEN
   nTrias = 0
-ELSE 
+ELSE
 ! read number of triangles
   CALL getCmdLine(MeshUnit, actLine)
   read(actLine, "(i6)") nTrias
@@ -153,7 +153,7 @@ DO WHILE((TRIM(actLine).ne.'Quadrangles').and.(TRIM(actLine).ne.'End'))
 END DO
 IF (TRIM(actLine).eq.'End') THEN
   nQuads = 0
-ELSE 
+ELSE
 ! read number of quadrangles
   CALL getCmdLine(MeshUnit, actLine)
   read(actLine, "(i6)") nQuads
@@ -191,7 +191,7 @@ REAL, POINTER    :: Vertex(:,:)
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER          :: MeshUnit, stat, i, j, discard, nElem, elemType, nTag, &
                     pGroup, id
 CHARACTER(256)   :: actLine
@@ -295,7 +295,7 @@ DO i = 1, nElem
     WRITE(*,*) 'ERROR: The ', i, 'th element in the Gmsh file is broken'
     STOP
   END IF
-  
+
   ! element-type
   actLine = TRIM(ADJUSTL(actLine))
   CALL ConsumeInteger(actLine, elemType, stat)
@@ -303,7 +303,7 @@ DO i = 1, nElem
     WRITE(*,*) 'ERROR: The element with id ', id, ' in the Gmsh file is broken'
     STOP
   END IF
-  
+
   ! number of integer tags to read
   actLine = TRIM(ADJUSTL(actLine))
   CALL ConsumeInteger(actLine, nTag, stat)
@@ -311,7 +311,7 @@ DO i = 1, nElem
     WRITE(*,*) 'ERROR: The element with id ', id, ' in the Gmsh file is broken'
     STOP
   END IF
-  
+
   ! first integer tag denotes physical group of the element
   actLine = TRIM(ADJUSTL(actLine))
   CALL ConsumeInteger(actLine, pGroup, stat)
@@ -319,7 +319,7 @@ DO i = 1, nElem
     WRITE(*,*) 'ERROR: The element with id ', id, ' in the Gmsh file is broken'
     STOP
   END IF
-  
+
   ! all further integer tags are discarded
   DO j = 2, nTag
     actLine = TRIM(ADJUSTL(actLine))
@@ -329,24 +329,24 @@ DO i = 1, nElem
       STOP
     END IF
   END DO
-  
+
   ! handle different element types
   SELECT CASE(elemType)
   CASE(1) ! 2 node line
     IF ( pGroup .GT. 100 ) THEN ! physical group above 100 denotes BC
       nBCEdges = nBCEdges + 1
       BCEdgeTemp(nBCEdges, 3) = pGroup
-      
+
       READ(actLine,*, IOSTAT = stat) BCEdgeTemp(nBCEdges, 1:2) ! read two end nodes
       IF ( stat .NE. 0 ) THEN
         WRITE(*,*) 'ERROR: The element with id ', id, ' in the Gmsh file is broken'
         STOP
       END IF
-    END IF 
+    END IF
   CASE(2) ! 3 node triangle
     nTrias = nTrias + 1
     TriaTemp(nTrias, 4) = pGroup
-    
+
     READ(actLine,*, IOSTAT = stat) TriaTemp(nTrias, 1:3) ! read three corners
     IF ( stat .NE. 0 ) THEN
       WRITE(*,*) 'ERROR: The element with id ', id, ' in the Gmsh file is broken'
@@ -355,7 +355,7 @@ DO i = 1, nElem
   CASE(3) ! 4 node quadangle
     nQuads = nQuads + 1
     QuadTemp(nQuads, 5) = pGroup
-    
+
     READ(actLine,*, IOSTAT = stat) QuadTemp(nQuads, 1:4) ! read four corners
     IF ( stat .NE. 0 ) THEN
       WRITE(*,*) 'ERROR: The element with id ', id, ' in the Gmsh file is broken'
@@ -411,12 +411,12 @@ INTEGER           :: stat   ! number of characters read is returned,
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 CHARACTER(LEN=*), PARAMETER :: digits = '0123456789' ! for matching
 INTEGER                     :: i
 CHARACTER(LEN=16)           :: t ! space for dynamic format string
 !===================================================================================================================================
- 
+
 ! determine length of integer string representation
 i = 0
 DO WHILE ( i .LE. len(buf) .AND. scan(digits, buf(i+1:i+1)) .NE. 0 )
@@ -445,17 +445,17 @@ SUBROUTINE ReadCGNS(FileName, Vertices, nVertices, BCEdge, nBCEdges, Tria, nTria
 ! Read in CGNS mesh for restart
 !===================================================================================================================================
 ! MODULES
-USE MOD_Mesh_Vars,ONLY: 
+USE MOD_Mesh_Vars,ONLY:
 USE MOD_Readin, ONLY: getFreeIOUnit, getCmdLine
-!-----------------------------------------------------------------------------------------------------------------------------------
-! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! Include CGNS Library:
 ! (Please note that the CGNS library has to be installed in the computer's
 ! library and include path (see CGNS documentation for more information:
 ! www.cgns.org)
-INCLUDE 'cgnslib_f.h'
+USE CGNS
+!-----------------------------------------------------------------------------------------------------------------------------------
+! IMPLICIT VARIABLE HANDLING
+IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT VARIABLES
 CHARACTER(LEN=256):: FileName
@@ -465,10 +465,10 @@ REAL, POINTER     :: Vertices(:,:)
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER           :: ierr, i, iTria, iQuad, iBCEdge
 INTEGER           :: CGNSUnit
-INTEGER           :: BaseIndex, ZoneIndex, SectionIndex 
+INTEGER           :: BaseIndex, ZoneIndex, SectionIndex
 INTEGER           :: iSize(1,3), nElems, SectionType, el_start, el_end
 INTEGER           :: nbndry, parent_flag, DataSize, normallist, iBC
 INTEGER           :: BCCode
@@ -682,26 +682,26 @@ USE MOD_Globals
 USE MOD_Mesh_Vars,ONLY:
 USE MOD_Readin, ONLY: getFreeIOUnit, getCmdLine
 !-----------------------------------------------------------------------------------------------------------------------------------
-! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE
-!-----------------------------------------------------------------------------------------------------------------------------------
 ! Include CGNS Library:
 ! (Please note that the CGNS library has to be installed in the computer's
 ! library and include path (see CGNS documentation for more information:
 ! www.cgns.org)
-INCLUDE 'cgnslib_f.h'
+USE CGNS
+!-----------------------------------------------------------------------------------------------------------------------------------
+! IMPLICIT VARIABLE HANDLING
+IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT VARIABLES
 CHARACTER(LEN=256):: FileName
 INTEGER           :: nVertices, nBCEdges, nTrias, nQuads
 INTEGER           :: vS,vE,tS,tE,qS,qE,eS,eE
-INTEGER, POINTER  :: BCEdge(:,:), Tria(:,:), Quad(:,:),ZoneConnect(:) 
+INTEGER, POINTER  :: BCEdge(:,:), Tria(:,:), Quad(:,:),ZoneConnect(:)
 REAL, POINTER     :: Vertices(:,:)
 INTEGER,POINTER   :: nVerticesZone(:),nBCEdgesZone(:), nTriasZone(:), nQuadsZone(:)
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER           :: ierr, i
 INTEGER           :: iConn, nConns, nConnPnts
 INTEGER           :: iBC,nbndry, BCCode,vOffset,zoneNumber
@@ -738,30 +738,30 @@ ALLOCATE(nQuadsZone(nZones),ZoneName(nZones))
 ! to allocate vectors, loop over zones
 nTriasZone(:)=0
 nQuadsZone(:)=0
-nBCEdgesZone(:)=0 
+nBCEdgesZone(:)=0
 nVertices=0
 nTrias=0
 nQuads=0
 nBCEdges=0
 DO ZoneIndex=1,nZones
   ! count Nodes
-  CALL cg_zone_read_f(CGNSUnit,             &     
-                      BaseIndex,            &     
-                      ZoneIndex,            &     
-                      ZoneName(Zoneindex),  &     !output needed name of Zone  
-                      iSize,                &     !output needed: Sizes of Zones 
-                      ierr) 
+  CALL cg_zone_read_f(CGNSUnit,             &
+                      BaseIndex,            &
+                      ZoneIndex,            &
+                      ZoneName(Zoneindex),  &     !output needed name of Zone
+                      iSize,                &     !output needed: Sizes of Zones
+                      ierr)
     IF (ierr .EQ. ERROR) CALL errorCGNS(ierr,'cg_zoneread_f')
   nVerticesZone(ZoneIndex) = iSize(1,1)
   ! count Elements
   CALL cg_section_read_f(CGNSUnit,     &
                          BaseIndex,    &
                          ZoneIndex,    &
-                         SectionIndex, &  
+                         SectionIndex, &
                          SectionName,  &   ! Name of section
                          SectionType,  &   ! Type of Element distibution, in Gridgen only TRIA_3 or QUAD_4
-                         el_start,     &   
-                         el_end,       &  
+                         el_start,     &
+                         el_end,       &
                          nbndry,       &
                          parent_flag,  &
                          ierr          )
@@ -812,7 +812,7 @@ DO ZoneIndex=1,nZones
   nBCEdgesZone(ZoneIndex)= nBCEdges
 END DO !Zoneindex=1,nZones
 !-----------------------------------------------------------------------------------------------------------------------------------
-! Allocate vertex array 
+! Allocate vertex array
 nVertices=SUM(nVerticesZone(:))
 ALLOCATE(Vertices(nVertices, 2),ZoneConnect(nVertices))
 ZoneConnect(:)=0
@@ -845,7 +845,7 @@ WRITE(*,*)'       number of Trias  : ',nTriasZone(ZoneIndex)
 WRITE(*,*)'       number of Quads  : ',nQuadsZone(ZoneIndex)
 WRITE(*,*)'       number of Nodes  : ',nVerticesZone(ZoneIndex)
   ! Get Nodes
-  vS = vE + 1 
+  vS = vE + 1
   vE = vE + nVerticesZone(ZoneIndex)
   CALL cg_coord_read_f(CGNSUnit, BaseIndex, ZoneIndex, &
                        'CoordinateX', RealDouble, 1,   &
@@ -863,11 +863,11 @@ WRITE(*,*)'       number of Nodes  : ',nVerticesZone(ZoneIndex)
   CALL cg_section_read_f(CGNSUnit,     &
                          BaseIndex,    &
                          ZoneIndex,    &
-                         SectionIndex, &  
+                         SectionIndex, &
                          SectionName,  &   ! Name of section
                          SectionType,  &   ! Type of Element, in Gridgen only TRI_3 or QUAD_4
-                         el_start,     &   
-                         el_end,       &  
+                         el_start,     &
+                         el_end,       &
                          nbndry,       &
                          parent_flag,  &
                          ierr          )
@@ -908,7 +908,7 @@ WRITE(*,*)'       number of Nodes  : ',nVerticesZone(ZoneIndex)
   CASE(TRI_3) ! triangle zone
     Tria(tS:tE,1)=Elems(1:DataSize:3) + vS
     IF (orient .GT. 0.) THEN
-      Tria(tS:tE,2)=Elems(2:DataSize:3) + vS  
+      Tria(tS:tE,2)=Elems(2:DataSize:3) + vS
       Tria(tS:tE,3)=Elems(3:DataSize:3) + vS
     ELSE
       Tria(tS:tE,2)=Elems(3:DataSize:3) + vS
@@ -918,12 +918,12 @@ WRITE(*,*)'       number of Nodes  : ',nVerticesZone(ZoneIndex)
   CASE(QUAD_4)
     Quad(qS:qE,1)=Elems(1:DataSize:4) + vS
     Quad(qS:qE,3)=Elems(3:DataSize:4) + vS
-    IF (orient .GT. 0.) THEN ! orientation correct 
+    IF (orient .GT. 0.) THEN ! orientation correct
       Quad(qS:qE,2)=Elems(2:DataSize:4) + vS
       Quad(qS:qE,4)=Elems(4:DataSize:4) + vS
-    ELSE ! 
+    ELSE !
       Quad(qS:qE,2)=Elems(4:DataSize:4) + vS
-      Quad(qS:qE,4)=Elems(2:DataSize:4) + vS 
+      Quad(qS:qE,4)=Elems(2:DataSize:4) + vS
     END IF
     Quad(qS:qE,5)=ZoneNumber
   CASE DEFAULT
@@ -947,7 +947,7 @@ WRITE(*,*)'       number of Nodes  : ',nVerticesZone(ZoneIndex)
                         ZoneIndex,      &
                         iBC,            &
                         BocoName,       & ! used to identify BC
-                        BCType,         & 
+                        BCType,         &
                         ptset_type,     &
                         nBCPnts,        & ! number of points
                         NormalIndex,    &
@@ -984,7 +984,7 @@ WRITE(*,*)'       number of Nodes  : ',nVerticesZone(ZoneIndex)
                    ierr)
     IF (ierr .EQ. ERROR) CALL errorCGNS(ierr,'cg_nconns_f')
   DO iConn=1,nConns
-    ! 
+    !
     CALL cg_conn_info_f(CGNSunit,        &
                         BaseIndex,       &
                         Zoneindex,       &
@@ -1010,19 +1010,19 @@ WRITE(*,*)'       number of Nodes  : ',nVerticesZone(ZoneIndex)
       i=i+1
     END DO
     IF (i .EQ. ZoneIndex) CYCLE ! zone Connectivity inside one zone
-    ALLOCATE(ConnPnts(nConnPnts,2))  
+    ALLOCATE(ConnPnts(nConnPnts,2))
     CALL cg_conn_read_f(CGNSunit,         &
                         BaseIndex,        &
                         Zoneindex, iConn, &
                         ConnPnts(:,1),    & ! node Ids of actual zone
-                        donor_datatype,   & 
+                        donor_datatype,   &
                         ConnPnts(:,2),    & ! node IDs of donor zone
                         ierr)
       IF (ierr .EQ. ERROR) CALL errorCGNS(ierr,'cg_conn_read_f')
-     
+
     DO i=1,nConnPnts
       ZoneConnect(ConnPnts(i,1)+vS)=ConnPnts(i,2) + vOffset
-    END DO  
+    END DO
     DEALLocate(ConnPnts)
   END DO ! iConn=1,nConns
 END DO ! ZoneIndex=1:nZones
@@ -1036,23 +1036,23 @@ SUBROUTINE errorCGNS(ierr,routine)
 !===================================================================================================================================
 ! MODULES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! IMPLICIT VARIABLE HANDLING
-  IMPLICIT NONE
-!-----------------------------------------------------------------------------------------------------------------------------------
   ! Include CGNS Library:
   ! (Please note that the CGNS library has to be installed in the computer's
   ! library and include path (see CGNS documentation for more information:
   ! www.cgns.org)
-  INCLUDE 'cgnslib_f.h'
+  USE CGNS
+!-----------------------------------------------------------------------------------------------------------------------------------
+! IMPLICIT VARIABLE HANDLING
+  IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT VARIABLES
-INTEGER            :: ierr 
+INTEGER            :: ierr
 CHARACTER(LEN=*)   :: routine
 CHARACTER(LEN=255) :: errormsg
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 !===================================================================================================================================
 
 CALL cg_get_error_f(errormsg)

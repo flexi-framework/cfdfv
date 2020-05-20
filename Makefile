@@ -1,20 +1,18 @@
-#*****************************************************************************!
-#
-# C F D F V   M A K E F I L E
-#
-#*****************************************************************************!
+### CFDFV Makefile
 
-include Makefile.defs
+include config.mk
+
+.PHONY: all cfdfv shared clean veryclean cleanshare release
 
 all: shared cfdfv
-	@echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+	@echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 	@echo ' SUCCESS: ALL EXECUTABLES GENERATED!'
-	@echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-	
-cfdfv:
-	cd src/ && touch deplist.mk && $(MAKE) all 
+	@echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
-shared: 
+cfdfv:
+	cd src/ && touch deplist.mk && $(MAKE) all
+
+shared:
 	cd share/ && $(MAKE) all
 
 clean:
@@ -34,8 +32,6 @@ release:
 	cp -r share CFDFV
 	cp -r src CFDFV
 	cp -r utils CFDFV
-	cp Makefile* CFDFV
+	cp Makefile config.mk CFDFV
 	/bin/sh utils/relcleanup.sh CFDFV
 	tar cjf CFDFV.tar.bz2 CFDFV
-	
-

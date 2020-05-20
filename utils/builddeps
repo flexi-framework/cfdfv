@@ -96,6 +96,7 @@ def check_use_statements(use_statements, filename, exceptions):
   # Checks if use_statements list is completely translated, otherwise, there is no consistency with given files
   # Permanent exceptions can be defined here
   exceptions.append("HDF5")
+  exceptions.append("CGNS")
   exceptions.append("nr")
   exceptions.append("nrtype")
   # Additionally, remove unnecessary items, that are not translated

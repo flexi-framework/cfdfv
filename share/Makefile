@@ -1,36 +1,48 @@
-#*****************************************************************************!
-#
-# C F D F V   M A K E F I L E
-#
-#*****************************************************************************!
+### CFDFV Compile CGNS
 
-include ../Makefile.defs
-MAINDIR=../
+include ../config.mk
 
-all: cgns
+CGNS_DIR = CGNS-$(CGNS_VERSION)
+CGNS_LIB = $(CGNS_DIR)/BUILD/src/libcgns.a
 
-cgns:
-	@# CGNS library
-	@ if [ ! -f cgnslib_$(CGNS_VERSION)/build/src/libcgns.a ] ; then \
-		if [ ! -d cgnslib_$(CGNS_VERSION) ] ; then \
-			tar -xzf cgnslib_$(CGNS_VERSION)-$(CGNS_SUBVERSION).tar.gz 1>/dev/null ; \
-		fi ; \
-		mkdir cgnslib_$(CGNS_VERSION)/build && cd cgnslib_$(CGNS_VERSION)/build &&  FC='$(FC)' cmake -DENABLE_FORTRAN=ON -DENABLE_64BIT=ON -DCMAKE_INSTALL_PREFIX=../LINUX64 -DCGNS_BUILD_SHARED=OFF -DENABLE_LEGACY=ON .. && $(MAKE) && $(MAKE) install ; \
-	fi ; \
+.PHONY: all clean
 
-#------------------------------------------------------------------------------
-# utility targets
-#------------------------------------------------------------------------------
-.PHONY: clean veryclean cleanshare
+all: $(CGNS_LIB)
+
+$(CGNS_DIR):
+	-tar -xzf $(CGNS_DIR).tar.gz
+
+$(CGNS_LIB): $(CGNS_DIR)
+	-@mkdir $(CGNS_DIR)/BUILD && \
+	cd $(CGNS_DIR)/BUILD && \
+	cmake \
+		-Wno-dev \
+		--no-warn-unused-cli \
+		-DCMAKE_INSTALL_PREFIX=. \
+		-DBUILD_CGNSTOOLS=OFF \
+		-DCGNS_BUILD_SHARED=OFF \
+		-DCGNS_USE_SHARED=ON \
+		-DENABLE_64BIT=ON \
+		-DENABLE_FORTRAN=ON \
+		-DENABLE_HDF5=OFF \
+		-DENABLE_LEGACY=ON \
+		-DENABLE_SCOPING=OFF \
+		-DENABLE_TESTS=OFF \
+		-DCGNS_BUILD_CGNSTOOLS=OFF \
+		-DCGNS_BUILD_SHARED=OFF \
+		-DCGNS_BUILD_TESTING=OFF \
+		-DCGNS_ENABLE_64BIT=ON \
+		-DCGNS_ENABLE_BASE_SCOPE=OFF \
+		-DCGNS_ENABLE_FORTRAN=ON \
+		-DCGNS_ENABLE_HDF5=OFF \
+		-DCGNS_ENABLE_LEGACY=ON \
+		-DCGNS_ENABLE_MEM_DEBUG=OFF \
+		-DCGNS_ENABLE_SCOPING=OFF \
+		-DCGNS_ENABLE_TESTS=OFF \
+		-DCGNS_USE_SHARED=ON \
+		.. && \
+	$(MAKE) install
+
 
 clean:
-	@rm -f $(OBJ) *.mod Cfdfv.o *.i
-	@rm -f CfdFV.o
-
-veryclean: clean
-	@rm -f *~
-
-cleanshare:
-	@if [ -d share/cgnslib_$(CGNS_VERSION) ] ; then \
-		cd share/cgnslib_$(CGNS_VERSION) && $(MAKE) allclean ; \
-	fi
+	-rm -rf $(CGNS_DIR)

@@ -10,7 +10,7 @@ PRIVATE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! GLOBAL VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-INTERFACE CGNS_ReadSolution 
+INTERFACE CGNS_ReadSolution
    MODULE PROCEDURE CGNS_ReadSolution
 END INTERFACE
 INTERFACE getCmdLine
@@ -38,23 +38,23 @@ USE MOD_Globals
 USE MOD_EoS      ,ONLY:PrimCons
 USE MOD_Mesh_Vars,ONLY:tElem
 USE MOD_Mesh_Vars,ONLY:nElems,FirstElem
-USE MOD_Mesh_Vars,ONLY:strIniCondFile 
+USE MOD_Mesh_Vars,ONLY:strIniCondFile
 USE MOD_TimeDisc_Vars,ONLY:t,Time_Overall
-!-----------------------------------------------------------------------------------------------------------------------------------
-! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! Include CGNS Library:
 ! (Please note that the CGNS library has to be installed in the computer's
 ! library and include path (see CGNS documentation for more information:
 ! www.cgns.org)
-INCLUDE 'cgnslib_f.h'
+USE CGNS
+!-----------------------------------------------------------------------------------------------------------------------------------
+! IMPLICIT VARIABLE HANDLING
+IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER              :: ierr
 INTEGER              :: CGNSUnit
 INTEGER              :: iSize(1,3)
@@ -69,7 +69,7 @@ TYPE(tElem), POINTER :: aElem
 CALL cg_open_f(TRIM(strIniCondFile), CG_MODE_READ, CGNSUnit, ierr)
 ! Get number of elements
 CALL cg_zone_read_f(CGNSUnit, 1, 1, ZoneName, iSize, ierr)
-! Check if the number of elements in the CGNS file corresponds with the 
+! Check if the number of elements in the CGNS file corresponds with the
 ! number if elements in the MESH
 IF (nElems /= iSize(1,2)) THEN
   WRITE(*,*) '  ERROR reading CGNS flow solution: wrong number of elements.'
@@ -109,7 +109,7 @@ SUBROUTINE getCmdLine(Unit, Line)
 ! MODULES
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE 
+IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT VARIABLES
 INTEGER,INTENT(IN)              :: Unit
@@ -117,7 +117,7 @@ INTEGER,INTENT(IN)              :: Unit
 ! OUTPUT VARIABLES
 CHARACTER(LEN=*),INTENT(OUT)    :: Line
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 CHARACTER(LEN=256)              :: RawLine
 CHARACTER(LEN=256)              :: CmdLine
 LOGICAL                         :: Cmd_isEmpty
@@ -150,12 +150,12 @@ SUBROUTINE ucase(string)
 ! MODULES
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE 
+IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT & OUTPUT VARIABLES
 CHARACTER(LEN=*)    :: string
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER             :: i, length
 !===================================================================================================================================
 
@@ -174,7 +174,7 @@ SUBROUTINE readErrors(Unit)
 ! subroutine to read errors
 !===================================================================================================================================
 ! MODULES
-USE MOD_Analyze_Vars ,ONLY:ExactSolution 
+USE MOD_Analyze_Vars ,ONLY:ExactSolution
 USE MOD_Equation_Vars,ONLY:intExactFunc
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! IMPLICIT VARIABLE HANDLING
@@ -185,7 +185,7 @@ INTEGER,INTENT(IN)             :: Unit
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 CHARACTER(256)      :: actLine
 !===================================================================================================================================
 
@@ -211,7 +211,7 @@ SUBROUTINE GetFreeIOUnit(Start,IO_Unit)
 ! MODULES
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE 
+IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT VARIABLES
 INTEGER,INTENT(IN)  :: Start
@@ -219,7 +219,7 @@ INTEGER,INTENT(IN)  :: Start
 ! OUTPUT VARIABLES
 INTEGER,INTENT(OUT) :: IO_Unit
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 LOGICAL             :: fopened
 INTEGER             :: TempUnit
 !===================================================================================================================================
