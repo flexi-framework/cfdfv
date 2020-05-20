@@ -33,8 +33,8 @@ ifeq ($(COMPILER), gnu)
     FLFLAGS += -g -O0 -ggdb3 -fbounds-check -finit-real=nan -fbacktrace -Wunused \
     	       -ffpe-trap=invalid,zero,overflow,underflow,denormal
   else
-    FCFLAGS += -O3 -march=native
-    FLFLAGS += -O3 -march=native
+    FCFLAGS += -Ofast -march=native
+    FLFLAGS += -Ofast -march=native
   endif
   ifeq ($(PARALLEL)), on)
     FCFLAGS += -fopenmp
