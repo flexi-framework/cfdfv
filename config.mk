@@ -27,7 +27,7 @@ ifeq ($(COMPILER), gnu)
   FC      = gfortran-8
   FCFLAGS = -fdefault-real-8 -fdefault-double-8 -fbackslash
   FLFLAGS = -fdefault-real-8 -fdefault-double-8 -fbackslash
-  ifeq ($(DEBUG)), on)
+  ifeq ($(DEBUG), on)
     FCFLAGS += -g -O0 -ggdb3 -fbounds-check -finit-real=nan -fbacktrace -Wunused \
     	       -ffpe-trap=invalid,zero,overflow,underflow,denormal
     FLFLAGS += -g -O0 -ggdb3 -fbounds-check -finit-real=nan -fbacktrace -Wunused \
@@ -36,11 +36,11 @@ ifeq ($(COMPILER), gnu)
     FCFLAGS += -Ofast -march=native
     FLFLAGS += -Ofast -march=native
   endif
-  ifeq ($(PARALLEL)), on)
+  ifeq ($(PARALLEL), on)
     FCFLAGS += -fopenmp
     FLFLAGS += -fopenmp
   endif
-  ifeq ($(PROF)), on)
+  ifeq ($(PROF), on)
     FCFLAGS += -pg
     FLFLAGS += -pg
   endif
@@ -51,7 +51,7 @@ ifeq ($(COMPILER), intel)
   FC      = ifort
   FCFLAGS = -fpp -assume bscc -r8 -i4 -traceback -warn all
   FLFLAGS = -r8 -i4 -traceback -assume bscc
-  ifeq ($(DEBUG)), on)
+  ifeq ($(DEBUG), on)
     FCFLAGS += -g -O0 -fpe0 -traceback -check all,noarg_temp_created,noformat,\
 	       nooutput_conversion,pointer,bounds,uninit
     FLFLAGS += -g -O0
@@ -59,11 +59,11 @@ ifeq ($(COMPILER), intel)
     FCFLAGS += -O3 -xhost -vec-report0 -no-prec-div
     FLFLAGS += -O3 -xhost -vec-report0 -no-prec-div
   endif
-  ifeq ($(PARALLEL)), on)
+  ifeq ($(PARALLEL), on)
     FCFLAGS += -openmp
     FLFLAGS += -openmp
   endif
-  ifeq ($(PROF)), on)
+  ifeq ($(PROF), on)
     FCFLAGS += -p
     FLFLAGS += -p
   endif
