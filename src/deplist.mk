@@ -67,37 +67,6 @@ euler/flux/flux_ausmd.o: euler/flux/flux_ausmd.f90 \
 euler/flux/flux_ausmdv.o: euler/flux/flux_ausmdv.f90 \
 	euler/equation_vars.o 
 
-euler/flux/flux_central.o: euler/flux/flux_central.f90 \
-	euler/equation_vars.o 
-
-euler/flux/flux_godunov.o: euler/flux/flux_godunov.f90 \
-	euler/equation_vars.o \
-	euler/flux/exact_riemann.o 
-
-euler/flux/flux_hll.o: euler/flux/flux_hll.f90 \
-	euler/equation_vars.o \
-	globals.o 
-
-euler/flux/flux_hllc.o: euler/flux/flux_hllc.f90 \
-	euler/equation_vars.o \
-	globals.o 
-
-euler/flux/flux_hlle.o: euler/flux/flux_hlle.f90 \
-	euler/equation_vars.o \
-	globals.o 
-
-euler/flux/flux_lax_friedrichs.o: euler/flux/flux_lax_friedrichs.f90 \
-	euler/equation_vars.o 
-
-euler/flux/flux_roe.o: euler/flux/flux_roe.f90 \
-	euler/equation_vars.o 
-
-euler/flux/flux_steger_warming.o: euler/flux/flux_steger_warming.f90 \
-	euler/equation_vars.o 
-
-euler/flux/flux_van_leer.o: euler/flux/flux_van_leer.f90 \
-	euler/equation_vars.o 
-
 euler/flux/fluxcalculation.o: euler/flux/fluxcalculation.f90 \
 	euler/boundary/boundary.o \
 	euler/equation_vars.o \
@@ -116,6 +85,37 @@ euler/flux/fluxcalculation.o: euler/flux/fluxcalculation.f90 \
 	globals.o \
 	linearsolver/linearsolver_vars.o \
 	mesh/mesh_vars.o 
+
+euler/flux/flux_central.o: euler/flux/flux_central.f90 \
+	euler/equation_vars.o 
+
+euler/flux/flux_godunov.o: euler/flux/flux_godunov.f90 \
+	euler/equation_vars.o \
+	euler/flux/exact_riemann.o 
+
+euler/flux/flux_hllc.o: euler/flux/flux_hllc.f90 \
+	euler/equation_vars.o \
+	globals.o 
+
+euler/flux/flux_hlle.o: euler/flux/flux_hlle.f90 \
+	euler/equation_vars.o \
+	globals.o 
+
+euler/flux/flux_hll.o: euler/flux/flux_hll.f90 \
+	euler/equation_vars.o \
+	globals.o 
+
+euler/flux/flux_lax_friedrichs.o: euler/flux/flux_lax_friedrichs.f90 \
+	euler/equation_vars.o 
+
+euler/flux/flux_roe.o: euler/flux/flux_roe.f90 \
+	euler/equation_vars.o 
+
+euler/flux/flux_steger_warming.o: euler/flux/flux_steger_warming.f90 \
+	euler/equation_vars.o 
+
+euler/flux/flux_van_leer.o: euler/flux/flux_van_leer.f90 \
+	euler/equation_vars.o 
 
 euler/primcons.o: euler/primcons.f90 \
 	euler/equation_vars.o \
@@ -195,6 +195,15 @@ mesh/mesh_vars.o: mesh/mesh_vars.f90 \
 	euler/boundary/boundary_vars.o \
 	globals.o 
 
+output/output_cgns.o: output/output_cgns.f90 \
+	euler/boundary/boundary_vars.o \
+	euler/equation_vars.o \
+	euler/exactfunc.o \
+	globals.o \
+	mesh/mesh_vars.o \
+	output/output_vars.o \
+	timedisc/timedisc_vars.o 
+
 output/output.o: output/output.f90 \
 	analyze/analyze_vars.o \
 	euler/equation_vars.o \
@@ -205,15 +214,6 @@ output/output.o: output/output.f90 \
 	output/output_vars.o \
 	readin/readin.o \
 	readin/readintools.o \
-	timedisc/timedisc_vars.o 
-
-output/output_cgns.o: output/output_cgns.f90 \
-	euler/boundary/boundary_vars.o \
-	euler/equation_vars.o \
-	euler/exactfunc.o \
-	globals.o \
-	mesh/mesh_vars.o \
-	output/output_vars.o \
 	timedisc/timedisc_vars.o 
 
 output/output_vars.o: output/output_vars.f90 

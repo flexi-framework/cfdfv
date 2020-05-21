@@ -18,7 +18,7 @@ all: builddeps
 	@echo ' CFDFV COMPILED, NOW LINKING...'
 	@echo '---------------------------------------------------------------'
 	@$(FC) $(FLFLAGS) cfdfv.o ../lib/$(CFDFV_LIB) -o ../bin/cfdfv \
-		-L. -L../lib -L../share/cgnslib_$(CGNS_VERSION)/BUILD/lib -lcgns
+		-L. -L../lib -L../share/CGNS-$(CGNS_VERSION)/BUILD/lib -lcgns
 	@echo '---------------------------------------------------------------'
 	@echo ' CFDFV LINKED!'
 	@echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
