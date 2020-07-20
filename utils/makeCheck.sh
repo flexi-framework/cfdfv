@@ -1,8 +1,8 @@
 #!/bin/bash
 # test the implementation
 
-cfdfv="../../$(find -name cfdfv -type f -executable)"
-cgnsdiff="../../$(find -name cgnsdiff -type f -executable)"
+cfdfv="../../$(find -name cfdfv -type f -executable | head -n 1)"
+cgnsdiff="../../$(find -name cgnsdiff -type f -executable | head -n 1)"
 
 run_and_check() {
 	ini=$(basename $1)
@@ -12,9 +12,9 @@ run_and_check() {
 	$cfdfv $ini > "${ini%.*}.log"
 	find -type l -delete
 
-	master=$(ls *_Master.cgns)
-	echo "> Checking $master..."
-	$cgnsdiff -qd -t 0.1 $master reference/$master > "${ini%.*}.diff"
+	last=$(ls ${ini%.*}_0* | sort | tail -n 1)
+	echo "> Checking $last..."
+	$cgnsdiff -qd -t 0.1 $last reference/$last > "${ini%.*}.diff"
 
 	rm *.cgns *.dem *.csv
 

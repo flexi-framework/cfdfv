@@ -11,9 +11,10 @@ run_and_update() {
 	$cfdfv $ini > "${ini%.*}.log"
 	find -type l -delete
 
-	mv *.cgns reference/.
+	last=$(ls ${ini%.*}_0* | sort | tail -n 1)
+	mv $last reference/$last
 
-	rm *.log *.dem *.csv
+	rm *.cgns *.log *.dem *.csv
 }
 
 # Aufgabe 0
