@@ -67,8 +67,7 @@ run_and_check_csv() {
 	[ ! -s "${ini%.*}.diff" ] || (echo "ERRORS in $ini, abort!" && exit 1)
 }
 
-# Aufgabe 0
-echo "Checking BlasiusBoundaryLayer"
+echo "Checking Aufgabe 0"
 cd check/Aufg_0
 	run_and_check_cgns Calc/Profil/Keilprofil/keil_coarse.ini Calc/Profil/Keilprofil/keil_coarse.msh
 	run_and_check_cgns Calc/Profil/Keilprofil/keil_intermediate.ini Calc/Profil/Keilprofil/keil_intermediate.msh
