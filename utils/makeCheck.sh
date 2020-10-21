@@ -68,8 +68,8 @@ run_and_check_csv() {
 }
 
 # Aufgabe 0
-echo "Checking Aufgabe 0"
-cd check/Aufg_0 &&
+echo "Checking BlasiusBoundaryLayer"
+cd check/Aufg_0
 	run_and_check_cgns Calc/Profil/Keilprofil/keil_coarse.ini Calc/Profil/Keilprofil/keil_coarse.msh
 	run_and_check_cgns Calc/Profil/Keilprofil/keil_intermediate.ini Calc/Profil/Keilprofil/keil_intermediate.msh
 	#run_and_check_cgns Calc/Profil/Keilprofil/keil_fine.ini Calc/Profil/Keilprofil/keil_fine.msh
@@ -78,7 +78,7 @@ cd check/Aufg_0 &&
 cd ../..
 
 echo "Checking Aufgabe 1"
-cd check/Aufg_1 &&
+cd check/Aufg_1
 	run_and_check_csv Calc/RiemannProblems/sod.ini
 	run_and_check_csv Calc/RiemannProblems/sod_implicit.ini
 	run_and_check_csv Calc/RiemannProblems/toro1.ini
@@ -86,3 +86,42 @@ cd check/Aufg_1 &&
 	run_and_check_csv Calc/RiemannProblems/toro3.ini
 	run_and_check_csv Calc/RiemannProblems/toro4.ini
 	run_and_check_csv Calc/RiemannProblems/toro5.ini
+
+cd ../..
+
+echo "Checking Aufgabe 2"
+cd check/Aufg_2
+	#run_and_check_cgns Calc/GaussianPulse/gaussianPulse.ini
+	#run_and_check_cgns Calc/GaussianPulse/gaussianPulse_circgrid.ini Calc/GaussianPulse/circgrid.msh
+	#run_and_check_cgns Calc/DoubleMach/dmr.ini
+	#run_and_check_cgns Calc/ForwardFacingStep/ffs.ini Calc/ForwardFacingStep/ffs.mesh
+	#run_and_check_cgns Calc/ForwardFacingStep/ffs_subsonisch_pressureout.ini Calc/ForwardFacingStep/ffs_subsonisch_pressureout.mesh
+	#run_and_check_cgns Calc/ForwardFacingStep/ffs_subsonisch_supersonicout.ini Calc/ForwardFacingStep/ffs_subsonisch_supersonicout.mesh
+
+cd ../..
+
+echo "Checking Aufgabe 3"
+cd check/Aufg_3
+	#run_and_check_cgns Calc/RichtmyerMeshkovInstability/rmi.ini
+	#run_and_check_cgns Calc/Profil/NACA2312/NACA2312.ini Calc/Profil/NACA2312/NACA2312.mesh
+	#run_and_check_cgns Calc/SineWave/1D/SineWave1D.ini
+	#run_and_check_cgns Calc/SineWave/2D/SineWaveO1.ini
+	#run_and_check_cgns Calc/SineWave/2D/SineWaveO2.ini
+
+cd ../..
+
+echo "Checking Aufgabe 4"
+cd check/Aufg_4
+	#run_and_check_cgns Calc/Profil/NACA0012/NACA0012.ini Calc/Profil/NACA0012/NACA0012.msh
+	#run_and_check_cgns Calc/Cylinder/Cylinder.ini Calc/Cylinder/Cylinder.msh
+	#run_and_check_cgns Calc/Cylinder/Cylinder_implicit.ini Calc/Cylinder/Cylinder.msh
+
+cd ../..
+
+echo "Checking Aufgabe 5"
+cd check/Aufg_5
+	#run_and_check_cgns Calc/SineWave/NavierStokes/SineW_NavStokes_O1.ini
+	#run_and_check_cgns Calc/SineWave/NavierStokes/SineW_NavStokes_O2.ini
+	#run_and_check_cgns Calc/BlasiusBoundaryLayer/Blasius.ini Calc/BlasiusBoundaryLayer/Blasiusmesh.msh
+	#run_and_check_cgns Calc/BlasiusBoundaryLayer/Blasius_uniform_mesh.ini
+	#run_and_check_cgns Calc/Cylinder/Cylinder_visc.ini Calc/Cylinder/Cylinder_visc.msh
