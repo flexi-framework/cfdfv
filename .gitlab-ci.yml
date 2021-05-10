@@ -8,9 +8,6 @@ github:
   stage: deploy
   tags:
     - cfdfvtag
-  rules:
-    - if: '$DO_DEPLOY'
   script:
-    - if [ -z "${DO_DEPLOY}" ]; then exit ; fi
     - if [ $CI_SERVER_URL != /.*\.iag\.uni-stuttgart\.de$/ ]; then exit ; fi
     - git clone --single-branch git@gitlab.iag.uni-stuttgart.de:cfdfv/code.git cfdfv_github ; cd cfdfv_github ; git push --mirror git@github.com:flexi-framework/cfdfv.git ; cd ../
