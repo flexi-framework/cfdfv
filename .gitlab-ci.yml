@@ -5,6 +5,7 @@ stages:
 # Stage "deploy": Copies the repository to github
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 github:
+  stage: deploy
   tags:
     - cfdfvtag
   rules:
