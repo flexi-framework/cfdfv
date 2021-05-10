@@ -1,0 +1,74 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+\documentclass[a4paper,twocolumn]{article}
+
+\usepackage[ngerman]{babel}
+
+\usepackage{graphicx}
+
+\usepackage{verbatim}
+\usepackage{listings}
+\lstset{language=Java,basicstyle=\ttfamily,
+	breaklines=true,numbers=none,showlines=true,frame=single}
+
+\usepackage{fontspec,xltxtra,xunicode}
+\defaultfontfeatures{Mapping=tex-text}
+
+
+\title{NACA-Profil vernetzten mit Gmsh.Script}
+\author{Malte Hoffmann}
+\date{\today{}}
+
+\begin{document}
+
+\maketitle{}
+
+\clearpage
+
+\section{Benutzen des NACA-Scriptes}
+
+\subsection{Laden und Ausführen}
+Um das Script auszuführen, wird Gmsh mit dem Script als Parameter gestartet: \textit{gmsh NACA.script}. Nach dem Laden von Gmsh wird der Benutzer
+zu fünf Eingaben aufgefordert:
+\begin{enumerate}
+\item Die 1. Ziffer der NACA-4er Reihe (Profilwölbung in Prozent)
+\item Die 2. Ziffer der NACA-4er Reihe (Zehntel der Wölbungsrücklage)
+\item Die 3. Ziffer der NACA-4er Reihe (Zehntel der Profildicke)
+\item Die 4. Ziffer der NACA-4er Reihe (Hunderstel der Profildicke)
+\item Die Feinheit des Netzes. \begin{itemize}
+				\item 1.5 $\approx$ 5500-6000 Gitterzellen (Grob)
+				\item 0.7 $\approx$ 9000-10000 Gitterzellen (Mittel)
+				\item 0.28 $\approx$ 18000-20000 Gitterzellen (Fein)
+				\item 0.15 $\approx$ 30000-33000 Gitterzellen (Super Fein)
+			       \end{itemize}
+\end{enumerate}
+Das Eingabefeld ist vor jeder Eingabe von unzulässigen Zeichen zu bereinigen. In den ersten vier Eingaben ist nur eine Ziffer von 0 bis 9 zulässig.
+ Die Eingabe über die Feinheit des Netzes akzeptiert eine beliebige Real-Zahl z.B. 0.687. Bestätigt werden die Eingaben jeweils mit \textit{Enter}.
+
+\subsection{Überprüfen der Eingabe}
+Um die Eingabe zu überprüfen, wird die \textit{Message Console} zu Hilfe genommen. Mit \emph{Strg+l} oder über das Menu \emph{Tools} wird sie geöffnet.
+ In blauer Schrift ist dort die Information über das erstellte NACA-Profil zu lesen. Stimmt diese, kann das Netz im \emph{Mesh} Modus mit einem Klick 
+auf \emph{2D} erstellt werden. Wird das Netz angezeigt, kann das \textit{Statistic} Fenster mit \emph{Strg+i} oder über das Menu \emph{Tools} geöffnet werden.
+ Die Anzahl der gewünschten Gitterzellen kann mit der unter \textit{Triangles} verglichen werden.
+
+\subsection{Falsche Eingabe oder ungewünschte Gitterzellenanzahl}
+Das Script kann im Modus \textit{Geometry} mit \emph{Reload} neu gestartet werden.
+
+\subsection{Richtiges abspeichern und laden}
+Stimmen die Eingaben und die Gitterzellenzahl, kann das Netz gespeichert werden. Das Script besitzt, damit es nicht versehentlich durch den Benutzer geändert 
+wird, nur Leserechte. Somit müssen die soeben erstellten Geometrie-Daten in einer neuen Datei gespeichert werden. Zum Speichern wird im Kommandofenster-Menu \emph{File} 
+der Unterpunkt \emph{Save As...} aufgerufen. In dem sich öffnenden Fenster kann wie gewohnt in den gewünschten Ordner gewechselt werden. Da Gmsh beim späteren Öffnen 
+ein Bug haben kann, sollte der Ordner mit \textit{Favorites} und \textit{Add to Favorites} in den Favoriten gespeichert werden.\\
+Um eine neue Datei anzulegen, wird am Ende der Pfadeingabe im Eingabefeld \emph{Filename} der gewünschte Name mit der Endung \textit{.geo} hinzugefügt und mit \emph{OK} 
+bestätigt. Der folgende Hacken bei \textit{Save physical group labels} wird entfernt und mit \emph{OK} bestätigt. Ist die Datei schon vorhanden, genügt ein Doppelklick auf diese und mit \emph{Replace} wird sie überschrieben. Auch hier wird der Hacken entfernt und mit \emph{OK} bestätigt.\\
+Um die soeben gespeicherte Datei zu öffnen, wird über das Kommandofenster-Menu \emph{File} und \emph{Open...} das Dateifenster geöffnet. Ist dieses leer, kann mit einem 
+Klick auf \textit{Favorites} und dem gewünschten Ordner der Inhalt wieder angezeigt werden. Ist die richtige Datei gefunden, reicht ein Doppelklick um sie zu öffnen. 
+Wenn alles funktioniert, steht der Pfad inklusive des Dateinamens im oberen Balken des Editorfensters.
+\subsection{Speichern des Netzes}
+Um das Netz zu speichern, muss zuerst nochmals im Modus \emph{Mesh} auf \emph{2D} geklickt werden. Desweiteren reicht ein Klick auf \emph{Save} um das Netz
+mit dem vorher angelegtem Dateinamen und der Endung \textit{.msh} zu speichern. Die Netzdatei wird im gleichen Ordner wie die geöffnete Geometrie-Datei abgelegt.
+
+
+
+\end{document}

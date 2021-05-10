@@ -1,0 +1,103 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+import math
+import shutil
+import tempfile
+import time
+
+from modify_prm import modify_prm
+from analyze_functions import get_last_L1_error, get_last_L2_error, get_last_Linf_error, get_comp_time
+from execute_cfdfv import execute_cfdfv
+
+if len(sys.argv) == 2 :
+   flexi_path = "../../bin/cfdfv"
+   if not os.path.exists(flexi_path) :
+      print "path to flexi-executable '%s' is wrong, please modify script" % \
+            flexi_path
+      print "or use './convergence.py [path to cfdfv-executable] prm-file'"
+      sys.exit(1)
+   prm_path = sys.argv[1]
+elif len(sys.argv) == 3 :
+   flexi_path = sys.argv[1]
+   prm_path = sys.argv[2]
+else :
+   print 'usage: ./convergence.py [path to cfdfv-executable] prm-file'
+   sys.exit(1)
+
+if not os.path.exists(prm_path) :
+   print "parameter-file '%s' not found" % prm_path 
+   sys.exit(1)
+
+tprm = tempfile.NamedTemporaryFile()
+shutil.copy(prm_path, tprm.name)
+prm_path = tprm.name
+
+#for line in open(prm_path, 'r').readlines() :
+#   print line,
+
+grids = ['  25', \
+         '  50',\
+         ' 100',\
+         ' 200',\
+         ' 400',]
+i=0
+for grid in grids :
+   i = i + 1
+
+   # modify nElems of Grid in X and Y direction
+   modify_prm(prm_path, {'nElemsX' : grid})
+   modify_prm(prm_path, {'nElemsY' : grid})
+   # save last L2, Linf error for EOC computation
+   if i > 1 :
+      last_L1 = L1
+      last_L2 = L2
+      last_Linf = Linf
+
+   start_time = time.time()
+   # execute flexi and get L2, L_inf error
+   L1, L2, Linf, comp_time = execute_cfdfv(flexi_path, prm_path, \
+         [get_last_L1_error, get_last_L2_error, get_last_Linf_error, get_comp_time], mpi_procs = 1) 
+   end_time = time.time()
+
+
+   # only print rho 
+   L2=[L2[0]]
+   L1=[L1[0]]
+   Linf=[Linf[0]]
+   # output header of output-table
+   if i == 1:
+      sys.stdout.write("══════════════════╦")
+      for j in range(len(L2))  :
+         sys.stdout.write("═════════════════════════════════════════════════════════════════╦═════════════════════╦")
+      sys.stdout.write('\n')
+      print "    Grid          ║",
+      for j in range(len(L2))  :
+         sys.stdout.write(" L1 err       EOC    | L2 err       EOC    | Linf err     EOC    ║ Comp. Time          ║")
+      sys.stdout.write('\n')
+      sys.stdout.write("══════════════════╬")
+      for j in range(len(L2))  :
+         sys.stdout.write("═════════════════════════════════════════════════════════════════╬═════════════════════╬")
+      sys.stdout.write('\n')
+   print " %s             ║" % grid,
+
+   if i == 1 :
+      # for first computation only output L2, Linf errors
+      for j in range(len(L2))  :
+         print "%8.4e          | %8.4e          | %8.4e          |                     ║\n" %(L1[j], L2[j], Linf[j]),
+   else :
+      # output L2, Linf errors and EOC
+      for j in range(len(L2))  :
+         try :
+           conv_l1 = math.log(last_L1[j]/L1[j]) / math.log(2)
+           conv_l2 = math.log(last_L2[j]/L2[j]) / math.log(2)
+           conv_linf = math.log(last_Linf[j]/Linf[j]) / math.log(2)
+         except :
+            conv_l1 = -99
+            conv_l2 = -99
+            conv_linf = -99
+         print "%8.4e %8.4f | %8.4e %8.4f | %8.4e %8.4f | %8.4e          ║\n" % (L1[j],conv_l1, L2[j], conv_l2,\
+               Linf[j],  conv_linf, comp_time),
+   sys.stdout.flush()
