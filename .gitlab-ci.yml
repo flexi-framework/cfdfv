@@ -1,0 +1,15 @@
+stages:
+  - deploy
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------
+# Stage "deploy": Copies the repository to github
+# ----------------------------------------------------------------------------------------------------------------------------------------------------
+github:
+  tags:
+    - cfdfvtag
+  rules:
+    - if: '$DO_DEPLOY'
+  script:
+    - if [ -z "${DO_DEPLOY}" ]; then exit ; fi
+    - if [ $CI_SERVER_URL != /.*\.iag\.uni-stuttgart\.de$/ ]; then exit ; fi
+    - git clone --single-branch git@gitlab.iag.uni-stuttgart.de:cfdfv/code.git flexi_github ; cd flexi_github ; git push --mirror git@github.com:flexi-framework/cfdfv.git ; cd ../
