@@ -37,11 +37,3 @@ release:
 	cp Makefile* CFDFV
 	/bin/sh utils/relcleanup.sh CFDFV
 	tar cjf CFDFV.tar.bz2 CFDFV
-
-check:
-	@/bin/bash utils/makeCheck.sh
-
-updateReferences:
-	@/bin/bash utils/updateReferences.sh
-
-.PHONY: all cfdfv clean veryclean cleanshare release check updateReferences
