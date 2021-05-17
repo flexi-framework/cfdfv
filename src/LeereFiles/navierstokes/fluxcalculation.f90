@@ -45,7 +45,7 @@ IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 REAL                    :: flux_local(NVAR)
 REAL                    :: pvar(NVAR)
 REAL                    :: pvar_l(NVAR), pvar_r(NVAR)
@@ -56,17 +56,17 @@ REAL                    :: state_mean(NVAR)
 REAL                    :: grad_Uxmean(NVAR),grad_Uymean(NVAR)
 REAL                    :: grad_Ux(NVAR),grad_Uy(NVAR)
 REAL                    :: correction(NVAR)
-REAL                    :: BaryBary(2) ! scaled vector of connection from 
+REAL                    :: BaryBary(2) ! scaled vector of connection from
                                        ! cell barycenter to cell barycenter
 !===================================================================================================================================
 !$omp parallel do private(aSide,pvar_l,pvar_r,pvar,&
 !$omp& state_mean,grad_Uxmean,grad_Uymean,BaryBary,correction,grad_Ux,grad_Uy,&
-!$omp& flux_conv,flux_diffX,flux_diffY,flux_local) 
+!$omp& flux_conv,flux_diffX,flux_diffY,flux_local)
 
 ! Loop over all sides
 DO iSide = 1, nSides
   aSide => Sides(iSide)%Side
-! Extract left state 
+! Extract left state
   pvar(:) = aSide%pvar(:)
 ! rotate it into normal direction
   pvar_l(RHO) = pvar(RHO)
@@ -133,6 +133,7 @@ USE MOD_Mesh_Vars,              ONLY:nSides,Sides
 USE MOD_Mesh_Vars,              ONLY:Elems,tElem,tSide,nElems
 USE MOD_LinearSolver_Vars,      ONLY:R_XK,rEps0,srEps0
 USE MOD_Boundary,               ONLY:Boundary
+USE MOD_EOS,                    ONLY:ConsPrim
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! IMPLICIT VARIABLE HANDLING
 IMPLICIT NONE
@@ -143,11 +144,11 @@ INTEGER,INTENT(IN)      :: ElemID,iVar
 ! OUTPUT VARIABLES
 REAL,INTENT(IN)         :: t
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 TYPE(tElem), POINTER    :: aElem,gElem
 TYPE(tSide), POINTER    :: aSide,gSide
 REAL                    :: flux_local(NVAR),flux_diff(NVAR)
-REAL                    :: pvar(NVAR)
+REAL                    :: pvar(NVAR),cvar(NVAR)
 REAL                    :: pvar_l(NVAR), pvar_r(NVAR),pvar_dummy(NVAR),n(2)
 INTEGER                 :: NBElemID
 !===================================================================================================================================
@@ -159,9 +160,17 @@ aElem%u_t(:) = 0.
 ! loop over all sides
 aSide => aElem%FirstSide
 DO WHILE(ASSOCIATED(aSide))
-  ! Extract left state 
-  pvar(:) = aElem%pvar(:)
-  pvar(iVar) = aElem%pvar(iVar)+rEps0
+  ! Check for periodic single layer (1D) meshes
+  ! In this case, flux_diff of opposing sides cancel out and can be neglected
+  NBElemID=aSide%connection%Elem%ID
+  IF(NBElemID.EQ.ElemID) THEN
+    aSide => aSide%nextElemSide
+    CYCLE
+  END IF
+  ! Extract left state
+  cvar(:) = aElem%cvar(:)
+  cvar(iVar) = cvar(iVar)+rEps0
+  CALL ConsPrim(pvar,cvar)
   ! Extract right state:
   IF(ASSOCIATED(aSide%connection%BC))THEN
     ! boundary condition
@@ -195,7 +204,7 @@ DO WHILE(ASSOCIATED(aSide))
                       pvar_l(P),   pvar_r(P),   &
                       flux_local                )
 !-----------------------------------------------------------------------------------------------------------------------------------
-  ! Rotate Flux into global coordinate system, build differenz to old flux 
+  ! Rotate Flux into global coordinate system, build difference to old flux
   ! and Integrate flux over edge using the midpoint rule
   flux_diff(RHO) = -aSide%flux(RHO) + aSide%length*flux_local(RHO)
   flux_diff(M1)  = -aSide%flux(M1 ) + aSide%length*(n(1) *flux_local(M1) - n(2) *flux_local(M2))
@@ -204,10 +213,9 @@ DO WHILE(ASSOCIATED(aSide))
 
   aElem%u_t = aElem%u_t + flux_diff
 !-----------------------------------------------------------------------------------------------------------------------------------
-  ! add contribution to neibor element. caution change sign for flux AND  for u_t, therefore, sign is not changed
-  NBElemID=aSide%connection%Elem%ID
+  ! add contribution to neighbor element. caution change sign for flux AND  for u_t, therefore, sign is not changed
   IF((NBElemID.GT.0).AND.(NBElemID).LE.nElems)THEN
-    aSide%connection%Elem%u_t =aSide%connection%Elem%Area_q *flux_diff*srEps0
+    aSide%connection%Elem%u_t = aSide%connection%Elem%Area_q *flux_diff*srEps0
   END IF
   aSide => aSide%nextElemSide
 END DO
@@ -217,7 +225,7 @@ aElem%u_t(:) = - aElem%u_t(:)*aElem%Area_q*srEps0
 END SUBROUTINE FluxJacobianFD
 
 
-SUBROUTINE ConvectiveFlux(rho_l, rho_r, v1_l, v1_r,           & 
+SUBROUTINE ConvectiveFlux(rho_l, rho_r, v1_l, v1_r,           &
                           v2_l, v2_r, p_l, p_r, flux_local    )
 !===================================================================================================================================
 ! Select the convective flux
@@ -247,7 +255,7 @@ REAL,INTENT(IN)                     :: v2_l, v2_r, p_l, p_r
 ! OUTPUT VARIABLES
 REAL,INTENT(OUT)                    :: flux_local(NVAR)
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 !===================================================================================================================================
 
 SELECT CASE (iFlux)
@@ -355,7 +363,7 @@ REAL,INTENT(IN)           :: gradx(NVAR),grady(NVAR)
 ! OUTPUT VARIABLES
 REAL,INTENT(OUT)          :: f(NVAR),g(NVAR)
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 !===================================================================================================================================
 
 ! Insert your Code here

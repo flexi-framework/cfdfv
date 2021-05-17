@@ -90,7 +90,7 @@ REAL,INTENT(IN)         :: t
 TYPE(tElem), POINTER    :: aElem,gElem
 TYPE(tSide), POINTER    :: aSide,gSide
 REAL                    :: flux_local(NVAR),flux_diff(NVAR)
-REAL                    :: pvar(NVAR)
+REAL                    :: pvar(NVAR),cvar(NVAR)
 REAL                    :: pvar_l(NVAR), pvar_r(NVAR),pvar_dummy(NVAR),n(2)
 INTEGER                 :: NBElemID
 !===================================================================================================================================
