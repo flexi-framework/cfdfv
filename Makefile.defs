@@ -50,8 +50,13 @@ endif
 #---------------------------------------------------------------------------------------------------------------------------------#
 ifeq ($(findstring GNU,$(ENVIRONMENT)),GNU)
   FC=gfortran
-  FCFLAGS=-fdefault-real-8 -fdefault-double-8 -fbackslash -fallow-argument-mismatch
-  FLFLAGS=-fdefault-real-8 -fdefault-double-8 -fbackslash -fallow-argument-mismatch
+  FCFLAGS=-fdefault-real-8 -fdefault-double-8 -fbackslash
+  FLFLAGS=-fdefault-real-8 -fdefault-double-8 -fbackslash
+  GCCVERSIONGTEQ10 := $(shell expr `gcc -dumpversion | cut -f1 -d.` \>= 10)
+	ifeq "$(GCCVERSIONGTEQ10)" "1"
+		FCFLAGS += -fallow-argument-mismatch
+		FLFLAGS += -fallow-argument-mismatch
+  endif
   ifeq ($(findstring DEBUG,$(ENVIRONMENT)),DEBUG)
     FCFLAGS  += -g -O0 -ggdb3 -fbounds-check -finit-real=nan -fbacktrace -Wunused #-ffpe-trap=invalid,zero,overflow,underflow,denormal
     FLFLAGS  += -g -O0 -ggdb3 -fbounds-check -finit-real=nan -fbacktrace -Wunused #-ffpe-trap=invalid,zero,overflow,underflow,denormal
