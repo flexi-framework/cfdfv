@@ -24,7 +24,7 @@ SUBROUTINE ImplicitTimeStep(t,dt,iter,res_iter)
 !===================================================================================================================================
 ! Euler Implicit Time Integration
 ! Non-linear equations requires to use a Newton Method with internal subiteration
-! using a GMRES method   
+! using a GMRES method
 !===================================================================================================================================
 ! MODULES
 USE MOD_Globals
@@ -80,7 +80,7 @@ END DO
 ! Newton
 time  = t + beta*dt
 !-----------------------------------------------------------------------------------------------------------------------------------
-CALL FV_TimeDerivative(time, iter ) 
+CALL FV_TimeDerivative(time, iter )
 !$omp parallel do private(aElem)
 DO iElem = 1, nElems
   aElem => Elems(iElem)%Elem
@@ -93,7 +93,7 @@ END DO
 !$omp end parallel do
 CALL VectorDotProduct(F_X0,F_X0,Norm2_F_X0)
 ! Prepare stuff for matrix vector multiplication
-IF (Norm2_F_X0.LE.(1.E-8)**2*nElems) THEN ! do not iterate, as U is already the implicit solution
+IF (Norm2_F_X0.LE.(1.E-12)**2*nElems) THEN ! do not iterate, as U is already the implicit solution
   Norm2_F_Xk=TINY(1.)
 ELSE ! we need iterations
  Norm2_F_Xk=Norm2_F_X0
@@ -116,7 +116,7 @@ DO WHILE((Norm2_F_Xk.GT.Eps2Newton*Norm2_F_X0).AND. (nInnerNewton.LT.nNewtonIter
     ENDIF
     AbortCritGMRES = min(0.999,max(gammaB,0.5*SQRT(Eps2Newton)/SQRT(Norm2_F_Xk)))
     Norm2_F_Xk_old=Norm2_F_Xk
-  END IF 
+  END IF
   nInnerNewton=nInnerNewton+1
   CALL GMRES_M(time,dt,Alpha,Beta,-F_Xk,SQRT(Norm2_F_Xk),AbortCritGMRES,DeltaX)
   !$omp parallel do private(aElem)
@@ -129,7 +129,7 @@ DO WHILE((Norm2_F_Xk.GT.Eps2Newton*Norm2_F_X0).AND. (nInnerNewton.LT.nNewtonIter
     CALL ConsPrim(aElem%pvar, aElem%cvar)
   END DO
   !$omp end parallel do
-  CALL FV_TimeDerivative(time, iter ) 
+  CALL FV_TimeDerivative(time, iter )
   !$omp parallel do private(aElem)
   DO iElem=1,nElems
     aElem => Elems(iElem)%Elem
