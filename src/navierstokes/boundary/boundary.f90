@@ -41,13 +41,13 @@ USE MOD_Boundary_Vars,ONLY:nBC,FirstBC
 USE MOD_Equation_Vars,ONLY:gamma
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! IMPLICIT VARIABLE HANDLING
-IMPLICIT NONE 
+IMPLICIT NONE
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! INPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 INTEGER                  :: iBC, Int_in
 LOGICAL                  :: AdiabaticWall
 REAL                     :: M, c, v
@@ -100,7 +100,7 @@ DO iBC = 1, nBC
         BC%TemperaturePrescribed = .FALSE.
         BC%HeatFlux = GETREAL('WallHeatFlux')
         !WRITE(*,'(a, F10.4)') '       Heat Flux: ', BC%HeatFlux
-      ELSE 
+      ELSE
         WRITE(*,*) 'Not possible to prescribe wall heat flux and wall temperature!'
         STOP
       END IF
@@ -171,6 +171,7 @@ SUBROUTINE SetBCatSides(time)
 USE MOD_Boundary_Vars,ONLY:
 USE MOD_Mesh_Vars,    ONLY: nBCSides,BCSides
 USE MOD_Mesh_Vars,    ONLY: tElem,tSide
+USE MOD_FV_Vars,      ONLY: SpatialOrder
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! IMPLICIT VARIABLE HANDLING
 IMPLICIT NONE
@@ -180,14 +181,14 @@ REAL,INTENT(IN)             :: time
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 TYPE(tElem), POINTER        :: aElem, gElem
 TYPE(tSide), POINTER        :: aSide, gSide
 INTEGER                     :: iSide
 !===================================================================================================================================
 
 !$omp parallel do private(gSide,gElem,aSide,aElem)
-DO iSide = 1, nBCSides 
+DO iSide = 1, nBCSides
   gSide => BCSides(iSide)%Side
   gElem => gSide%Elem
   aSide => gSide%Connection
@@ -197,6 +198,7 @@ DO iSide = 1, nBCSides
                 aSide%pvar,             &
                 gSide%pvar,             &
                 aSide%GP + aElem%Bary   )
+  IF (SpatialOrder == 1) gElem%pvar = gSide%pvar
 END DO
 !$omp end parallel do
 !-----------------------------------------------------------------------------------------------------------------------------------
@@ -219,14 +221,14 @@ REAL,INTENT(IN)             :: time
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 TYPE(tElem), POINTER        :: aElem, gElem
 TYPE(tSide), POINTER        :: aSide, gSide
 INTEGER                     :: iSide
 !===================================================================================================================================
 
 !$omp parallel do private(gSide,gElem,aSide,aElem)
-DO iSide = 1, nBCSides 
+DO iSide = 1, nBCSides
   gSide => BCSides(iSide)%Side
   gElem => gSide%Elem
   aSide => gSide%Connection
@@ -265,12 +267,12 @@ TYPE(tSide),POINTER,INTENT(IN)  :: aSide
 ! OUTPUT VARIABLES
 REAL,INTENT(OUT)                :: ghost_pvar(NVAR)
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 REAL                            :: V1_loc(2), V2_loc(2)
 REAL                            :: c, v, pres, n(2)
 REAL                            :: int_cvar(NVAR), ghost_cvar(NVAR)
 REAL                            :: int_pvar_loc(NVAR), ghost_pvar_loc(NVAR)
-REAL                            :: int_charvar(3), ghost_charvar(3) 
+REAL                            :: int_charvar(3), ghost_charvar(3)
 !===================================================================================================================================
 
 !-----------------------------------------------------------------------------------------------------------------------------------
@@ -284,7 +286,7 @@ SELECT CASE(aSide%BC%BCType)
 CASE(SLIPWALL)
   ! Rotate velocities into the edge's local coordinate system
   V1_loc(1)  =  n(1) * int_pvar(V1) + n(2) * int_pvar(V2)
-  V2_loc(1)  = -n(2) * int_pvar(V1) + n(1) * int_pvar(V2) 
+  V2_loc(1)  = -n(2) * int_pvar(V1) + n(1) * int_pvar(V2)
   ! Mirror V1 and extrapolate V2:
   V1_loc(2) = - V1_loc(1)
   V2_loc(2) =   V2_loc(1)
@@ -299,7 +301,7 @@ CASE(SLIPWALL)
 CASE(WALL)
   ! Rotate velocities into the edge's local coordinate system
   V1_loc(1)  =  n(1) * int_pvar(V1) + n(2) * int_pvar(V2)
-  V2_loc(1)  = -n(2) * int_pvar(V1) + n(1) * int_pvar(V2) 
+  V2_loc(1)  = -n(2) * int_pvar(V1) + n(1) * int_pvar(V2)
   ! Mirror V1 and V2:
   V1_loc(2) = - V1_loc(1)
   IF (mu.GT.0.)THEN  ! only use NS boundary condition in case viscosity is present
@@ -322,7 +324,7 @@ CASE(INFLOW)
 CASE(OUTFLOW)
   ghost_pvar(:) = int_pvar(:)
 !-----------------------------------------------------------------------------------------------------------------------------------
-! Pressure Outflow 
+! Pressure Outflow
 CASE(PRESSURE_OUT)
   c  = SQRT(gamma * int_pvar(P) / int_pvar(RHO))
   v  = n(1) * int_pvar(V1) + n(2) * int_pvar(V2)
@@ -330,7 +332,7 @@ CASE(PRESSURE_OUT)
     pres = aSide%BC%pvar(P)
   ELSE
     pres = int_pvar(P)
-  END IF 
+  END IF
   ghost_pvar      = int_pvar
   ghost_pvar(P)   = pres
   ghost_pvar(RHO) = int_pvar(RHO)*pres/int_pvar(P)
@@ -343,10 +345,10 @@ CASE(CHARACTERISTIC)
 ! Rotate primitve state into local coordinate system
   int_pvar_loc(:)  = int_pvar(:)
   int_pvar_loc(V1) =  n(1) * int_pvar(V1) + n(2) * int_pvar(V2)
-  int_pvar_loc(V2) = -n(2) * int_pvar(V1) + n(1) * int_pvar(V2) 
+  int_pvar_loc(V2) = -n(2) * int_pvar(V1) + n(1) * int_pvar(V2)
   ghost_pvar_loc(:)  = aSide%BC%pvar
   ghost_pvar_loc(V1) =  n(1) * aSide%BC%pvar(V1) + n(2) * aSide%BC%pvar(V2)
-  ghost_pvar_loc(V2) = -n(2) * aSide%BC%pvar(V1) + n(1) * aSide%BC%pvar(V2) 
+  ghost_pvar_loc(V2) = -n(2) * aSide%BC%pvar(V1) + n(1) * aSide%BC%pvar(V2)
 ! Compute conservative variables of both cells
   CALL PrimCons(int_pvar_loc, int_cvar)
   CALL PrimCons(ghost_pvar_loc, ghost_cvar)
@@ -366,7 +368,7 @@ CASE(CHARACTERISTIC)
 ! Determine the conservative state of the ghost cell
   CALL CharCons(ghost_charvar, ghost_cvar, int_pvar)
   IF (v > 0.) THEN
-    ghost_cvar(M2) = int_cvar(M2) 
+    ghost_cvar(M2) = int_cvar(M2)
   END IF
 ! Determine the primitive state of the ghost cell
   CALL ConsPrim(ghost_pvar, ghost_cvar)
