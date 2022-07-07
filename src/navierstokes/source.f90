@@ -44,7 +44,7 @@ REAL,INTENT(IN)         :: time
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 REAL                    :: src(NVAR)
 TYPE(tElem), POINTER    :: aElem
 INTEGER                 :: iGP, iElem
@@ -59,7 +59,7 @@ IF (CalcSource) THEN
       CALL EvalSource(SourceFunc, aElem%xGP(iGP,:), time, src)
       aElem%source = aElem%source + src * aElem%wGP(iGP)
     END DO
-  END DO 
+  END DO
   !$omp end parallel do
 END IF
 !-----------------------------------------------------------------------------------------------------------------------------------
@@ -84,12 +84,12 @@ REAL,INTENT(IN)                    :: x(NDIM), t
 ! OUTPUT VARIABLES
 REAL,INTENT(OUT)                   :: Source(NVAR)
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 REAL                   :: Frequency,Amplitude,Omega,a
 !===================================================================================================================================
 
 SELECT CASE(iSource)
-CASE(1) ! convergence test 
+CASE(1) ! convergence test
   Frequency=1.
   Amplitude=0.1
   Omega=Pi*Frequency

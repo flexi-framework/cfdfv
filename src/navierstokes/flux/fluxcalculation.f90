@@ -376,14 +376,14 @@ f(V1)  = 4./3.*gradx(V1)-2./3.*grady(V2)
 f(V2)  = grady(V1)+gradx(V2)
 f(E)   = 4./3.*state(V1)*gradx(V1)-2./3.*state(V1)*grady(V2)           &
          +(gradx(V2) + grady(V1))*state(V2)                            &
-         +gamma/((gamma-1.)*Pr*state(RHO)**2.)*(state(RHO)*gradx(P)-gradx(RHO)*state(P))
+         +gamma/(gamma1*Pr*state(RHO)**2.)*(state(RHO)*gradx(P)-gradx(RHO)*state(P))
 f(:)   = f(:)*mu
 g=0.
 g(V1)  = grady(V1)+gradx(V2)
 g(V2)  = 4./3.*grady(V2)-2./3.*gradx(V1)
 g(E)   = 4./3.*state(V2)*grady(V2)-2./3.*state(V2)*gradx(V1)           &
          +(grady(V1) + gradx(V2))*state(V1)                             &
-         +gamma/((gamma-1.)*Pr*state(RHO)**2.)*(state(RHO)*grady(P)-grady(RHO)*state(P))
+         +gamma/(gamma1*Pr*state(RHO)**2.)*(state(RHO)*grady(P)-grady(RHO)*state(P))
 g(:)   = g(:)*mu
 END SUBROUTINE DiffusionFlux
 

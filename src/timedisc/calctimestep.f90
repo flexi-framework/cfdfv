@@ -41,7 +41,7 @@ REAL,INTENT(IN)         :: printtime
 REAL,INTENT(OUT)        :: dt_max
 LOGICAL,INTENT(OUT)     :: viscous_timestep
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 REAL                    :: csound
 REAL                    :: dt_conv,dt_visc
 REAL                    :: sum_spectral_radii
@@ -88,7 +88,7 @@ ELSE ! 2D Case
     DO iElem = 1, nElems
       aElem => Elems(iElem)%Elem
       sum_spectral_radii = gammasPr_max*mu*aElem%sx**2. + gammasPr_max*mu*aElem%sy**2.
-      dt_visc          = DFL * (aElem%pvar(RHO))**2. * aElem%area**2./(4.*sum_spectral_radii) 
+      dt_visc          = DFL * (aElem%pvar(RHO)) * aElem%area**2./(4.*sum_spectral_radii)
       IF (dt_visc.NE.dt_visc) STOP 'Viscous timestep NaN'
       dt_visc_max        = MIN(dt_visc_max,dt_visc)
     END DO
