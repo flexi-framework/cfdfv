@@ -42,16 +42,14 @@ REAL,INTENT(IN)             :: p_l  , p_r
 ! OUTPUT VARIABLES
 REAL,INTENT(OUT)            :: flux_side(4)
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 REAL             :: f1_r(4),f1_l(4)
 REAL             :: e_r, e_l
 !===================================================================================================================================
 
  ! Calculate Energies
- e_r = gamma*gamma1q * p_r + 0.5 * rho_r * &
-       (v1_r * v1_r + v2_r * v2_r)
- e_l = gamma*gamma1q * p_l + 0.5 * rho_l * &
-       (v1_l * v1_l + v2_l * v2_l)
+ e_r = gamma1q * p_r + 0.5 * rho_r * (v1_r*v1_r + v2_r*v2_r)
+ e_l = gamma1q * p_l + 0.5 * rho_l * (v1_l*v1_l + v2_l*v2_l)
  ! Calculate the physical fluxes
  f1_r(1) = rho_r * v1_r
  f1_r(2) = f1_r(1)*v1_r + p_r
@@ -68,5 +66,5 @@ REAL             :: e_r, e_l
 !-----------------------------------------------------------------------------------------------------------------------------------
  RETURN
 END SUBROUTINE flux_central
-  
+
 END MODULE MOD_flux_central

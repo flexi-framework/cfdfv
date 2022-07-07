@@ -18,7 +18,7 @@ IMPLICIT NONE
   CHARACTER(LEN=256)   :: strMeshFile             ! Name of Mesh File
   CHARACTER(LEN=256)   :: strIniCondFile          ! CGNS file containing the initial condition
 !-----------------------------------------------------------------------------------------------------------------------------------
-! This array is part of tElem-connectivity section. Each array entry contains a pointer to a node that 
+! This array is part of tElem-connectivity section. Each array entry contains a pointer to a node that
 ! is associated with the respective element
 TYPE tNodePtr
   TYPE(tNode), POINTER :: Node                         ! Pointer to a Node in the NodeList
@@ -43,7 +43,7 @@ END TYPE tSidePtr
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! A pure side pointer used for generating lists of sides (i.e. for the profile)
 TYPE tPureSidePtr
-  TYPE(tPureSidePtr), POINTER :: nextSide             ! Pointer to the next entry in the the sidepointer list	
+  TYPE(tPureSidePtr), POINTER :: nextSide             ! Pointer to the next entry in the the sidepointer list
   TYPE(tSide), POINTER        :: Side                 ! Pointer to the actual Side in the Side List
 END TYPE tPureSidePtr
 !-----------------------------------------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ TYPE tSide
   REAL                     :: length          ! length of the edge
   REAL                     :: BaryBaryVec(2)  ! Vector (x,y) from Element Barycenter to Neighbor Barycenter
   REAL                     :: BaryBaryDist    ! Length of BaryBaryVec
-  REAL                     :: GP(1:2)         ! x- and y-component of the vector from the cell barycenter to 
+  REAL                     :: GP(1:2)         ! x- and y-component of the vector from the cell barycenter to
                                               ! the gaussian point at the side midpoint
   REAL                     :: w(1:2)          ! omega1 and 2 entries for 2nd order gradient reconstruction
                                               ! see Blazek Chapter 5.3.4
@@ -94,7 +94,7 @@ TYPE tElem
 
   ! REAL      :: K(NVAR)              ! Runge-Kutta stage update
 
-  INTEGER       :: nGP              ! Number of gaussian integration points 
+  INTEGER       :: nGP              ! Number of gaussian integration points
   REAL, POINTER :: xGP(:,:)         ! Gaussian points for volume integrals
   REAL, POINTER :: wGP(:)           ! Gaussian weights. The metric is already included.
 
@@ -115,22 +115,22 @@ END TYPE tCartMesh
 ! The type constitutes the pointer-based mesh structure. It contains the global mesh data and the list heads for the
 ! element, side and nodelists
 TYPE(tCartMesh)        :: CartMesh
-CHARACTER(LEN=256)     :: GridFile                 ! Name of CGNS gridfile        
+CHARACTER(LEN=256)     :: GridFile                 ! Name of CGNS gridfile
 
 INTEGER                :: MeshType                 ! 0= unstruct 1= cartesian mesh!
 INTEGER                :: MeshFormat               ! 0= EMC2 .mesh, 1=CGNS
 
-INTEGER                :: nNodes                   ! number of nodes              
+INTEGER                :: nNodes                   ! number of nodes
 
-INTEGER                :: nElems                   ! number of cells              
-INTEGER                :: nTrias                   ! number of triangles          
-INTEGER                :: nQuads                   ! number of quadrangles        
+INTEGER                :: nElems                   ! number of cells
+INTEGER                :: nTrias                   ! number of triangles
+INTEGER                :: nQuads                   ! number of quadrangles
 
-INTEGER                :: nSides                   ! number of Sides              
-INTEGER                :: nBCSides                 ! number of Boundary Sides     
-INTEGER                :: nInnerSides              ! number of Inner Sides        
+INTEGER                :: nSides                   ! number of Sides
+INTEGER                :: nBCSides                 ! number of Boundary Sides
+INTEGER                :: nInnerSides              ! number of Inner Sides
 
-REAL                   :: totalArea_q              ! inverse of total area of all cells 
+REAL                   :: totalArea_q              ! inverse of total area of all cells
 REAL                   :: xMin, xMax
 REAL                   :: yMin, yMax
 REAL                   :: dxRef
