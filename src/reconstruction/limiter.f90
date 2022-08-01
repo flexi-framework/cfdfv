@@ -42,7 +42,7 @@ TYPE(tElem), POINTER    :: aElem
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 !===================================================================================================================================
 
 ! Determine uMax and uMin
@@ -77,7 +77,7 @@ TYPE(tElem), POINTER    :: aElem
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 REAL                    :: phi(NVAR), phiLoc(NVAR)
 REAL                    :: uMax(NVAR), uMin(NVAR)
 REAL                    :: MaxDiff(NVAR), MinDiff(NVAR), uDiff(NVAR)
@@ -96,7 +96,7 @@ DO WHILE (ASSOCIATED(aSide))
   uMax(:) = MAX(uMax, aSide%connection%elem%pvar)
   uMin(:) = MIN(uMin, aSide%connection%elem%pvar)
   aSide => aSide%nextElemSide
-END DO 
+END DO
 !-----------------------------------------------------------------------------------------------------------------------------------
 maxDiff(:) = uMax(:) - aElem%pvar(:)
 minDiff(:) = uMin(:) - aElem%pvar(:)
@@ -106,7 +106,7 @@ minDiff_sq(:) = minDiff(:) * minDiff(:)
 ! Loop over all Edges: Determine phi
 phi(:) = 1.
 aSide => aElem%firstside
-DO WHILE (ASSOCIATED(aSide)) 
+DO WHILE (ASSOCIATED(aSide))
   phiLoc(:) = 1.
   DO iVar = 1, NVAR
     uDiff(iVar) = aElem%u_x(iVar) * aSide%GP(X_DIR) + &
@@ -120,7 +120,7 @@ DO WHILE (ASSOCIATED(aSide))
   END DO
   phi = MIN(phi, phiLoc)
   aSide => aSide%nextElemSide
-END DO 
+END DO
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! Compute limited Gradients
 aElem%u_x = aElem%u_x * phi
@@ -145,7 +145,7 @@ TYPE(tElem), POINTER    :: aElem
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! OUTPUT VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
-! LOCAL VARIABLES 
+! LOCAL VARIABLES
 REAL                    :: phi(NVAR), phiLoc(NVAR)
 REAL                    :: uMax(NVAR), uMin(NVAR)
 REAL                    :: MaxDiff(NVAR), MinDiff(NVAR), uDiff(NVAR)
@@ -164,17 +164,20 @@ DO WHILE (ASSOCIATED(aSide))
   uMax(:) = MAX(uMax, aSide%connection%elem%pvar)
   uMin(:) = MIN(uMin, aSide%connection%elem%pvar)
   aSide => aSide%nextElemSide
-END DO 
+END DO
 !-----------------------------------------------------------------------------------------------------------------------------------
 maxDiff = uMax - aElem%pvar
-minDiff = uMin - aElem%pvar
+DO iVar = 1, NVAR
+  minDiff(iVar) = uMin(iVar) - aElem%pvar(iVar)
+  minDiff(iVar) = SIGN(1.,minDiff(iVar)) * (ABS(minDiff(iVar)) + EPSILON(0.))
+END DO
 maxDiff_sq = maxDiff * maxDiff
 minDiff_sq = minDiff * minDiff
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! Loop over all Edges: Determine phi
 phi = 1.
 aSide => aElem%firstside
-DO WHILE (ASSOCIATED(aSide)) 
+DO WHILE (ASSOCIATED(aSide))
   phiLoc = 1.
   DO iVar = 1, NVAR
     uDiff(iVar) = aElem%u_x(iVar) * aSide%GP(X_DIR) + &
@@ -194,7 +197,7 @@ DO WHILE (ASSOCIATED(aSide))
   END DO
   phi = MIN(phi, phiLoc)
   aSide => aSide%nextElemSide
-END DO 
+END DO
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! Compute limited Gradients
 aElem%u_x = aElem%u_x * phi
