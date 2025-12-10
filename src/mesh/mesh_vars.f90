@@ -83,8 +83,10 @@ TYPE tElem
   REAL      :: pvar(NVAR)           ! Primitive Variables
   REAL      :: cvar(NVAR)           ! Conservative Variables
   REAL      :: cvar_stage(NVAR)     ! Conservative Variables at initial RK stage (needed for 2nd order RK time stepping)
-  REAL      :: u_x(NVAR)            ! x-gradient of pvar
-  REAL      :: u_y(NVAR)            ! y-gradient of pvar
+  REAL      :: u_x(NVAR)            ! x-gradient of pvar (limited for convection)
+  REAL      :: u_y(NVAR)            ! y-gradient of pvar (limited for convection)
+  REAL      :: u_x_unlim(NVAR)      ! unlimited x-gradient (for viscous terms)
+  REAL      :: u_y_unlim(NVAR)      ! unlimited y-gradient (for viscous terms)
   REAL      :: u_t(NVAR)            ! t-gradient of pvar
   REAL      :: source(NVAR)         ! source term
   REAL      :: dt                   ! Cell timestep

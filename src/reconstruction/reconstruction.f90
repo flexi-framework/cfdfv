@@ -56,6 +56,8 @@ IF (SpatialOrder == 1) THEN
     aSide => aElem%firstSide
     aElem%u_x(:) = 0
     aElem%u_y(:) = 0
+    aElem%u_x_unlim(:) = 0
+    aElem%u_y_unlim(:) = 0
     aElem%u_t(:) = 0
     DO WHILE(ASSOCIATED(aSide))
       aSide%pVar(:) = aElem%pVar(:)
@@ -74,6 +76,8 @@ ELSE
     aElem => Elems(iElem)%Elem
     aElem%u_x(:) = 0
     aElem%u_y(:) = 0
+    aElem%u_x_unlim(:) = 0
+    aElem%u_y_unlim(:) = 0
     aElem%u_t(:) = 0
   END DO
   !$omp end parallel do
@@ -125,6 +129,15 @@ ELSE
 !  END DO
 !  !$omp end parallel do
 
+! Save unlimited gradients before limiting
+  !$omp parallel do private(aElem)
+  DO iElem = 1, nElems
+    aElem => Elems(iElem)%Elem
+    aElem%u_x_unlim = aElem%u_x
+    aElem%u_y_unlim = aElem%u_y
+  END DO
+  !$omp end parallel do
+
 !-----------------------------------------------------------------------------------------------------------------------------------
   !$omp parallel do private(aElem,aSide,dx,dy)
 
@@ -151,4 +164,3 @@ END IF
 END SUBROUTINE SpatialReconstruction
 
 END MODULE MOD_Reconstruction
-

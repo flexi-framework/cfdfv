@@ -83,8 +83,13 @@ DO iSide = 1, nSides
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! Extract left and right gradient
   state_mean(:)  = 0.5*(aSide%connection%pvar(:) + aSide%pvar(:) )
-  grad_Uxmean(:) = 0.5*(aSide%Elem%u_x(:)+aSide%connection%Elem%u_x(:))
-  grad_Uymean(:) = 0.5*(aSide%Elem%u_y(:)+aSide%connection%Elem%u_y(:))
+  IF (ASSOCIATED(aSide%connection%BC)) THEN ! the side is a boundary side
+      grad_Uxmean(:) = aSide%Elem%u_x_unlim(:)
+      grad_Uymean(:) = aSide%Elem%u_y_unlim(:)
+  ELSE
+    grad_Uxmean(:) = 0.5*(aSide%Elem%u_x_unlim(:)+aSide%connection%Elem%u_x_unlim(:))
+    grad_Uymean(:) = 0.5*(aSide%Elem%u_y_unlim(:)+aSide%connection%Elem%u_y_unlim(:))
+  END IF
   BaryBary(:)    = aSide%BaryBaryVec(:)/aSide%BaryBaryDist
   correction(:)  = (grad_Uxmean(:)*BaryBary(1) + grad_Uymean(:)*BaryBary(2) -       &
                    (aSide%connection%Elem%pvar(:)-aSide%Elem%pvar(:))/aSide%BaryBaryDist)
